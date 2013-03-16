@@ -1,0 +1,50 @@
+# alpaca_update_tags
+
+## 概要
+
+gitで管理されているディレクトリにおいて、
+ctagsでtagsの生成、設定を行う。
+コマンドを実行することで、gitroot/.git/tagsに生成します。
+
+## 必須
+
+tpope/vim-fugitiveが必要です。
+
+## コマンド
+
+*AlpacaSetTags*
+setl tagsを実行して、.git/tagsを追加する
+
+*AlpacaUpdateTags*
+tagsを上書きします。
+
+## 設定
+
+filetypeの設定のオプションを設定する
+'_'では、全てのfiletypeに共通する設定を記述する
+
+*g:alpaca_update_tags_config*
+デフォルト
+let g:alpaca_update_tags_config = {
+      \ '_' : '-R --sort=yes',
+      \ }
+
+*g:alpaca_update_tags_bin*
+neobundleを使用している場合のみ設定の必要なし。
+let g:alpaca_update_tags_bin = expand('~/.bundle/alpaca_update_tags/bin/create_tags_into_git')
+
+## オススメの設定
+
+うん、らくちんですね。
+
+NeoBundleLazy 'taichouchou2/alpaca_update_tags', {
+      \ 'depends' : 'tpope/vim-fugitive',
+      \ 'autoload' : {
+      \   'commands': ['AlpacaUpdateTags', 'AlpacaSetTags']
+      \ }}
+
+aug MyUpdateTags
+  au!
+  au FileWritePost,BufWritePost * AlpacaUpdateTags
+  au FileReadPost,BufEnter * AlpacaSetTags
+aug END
