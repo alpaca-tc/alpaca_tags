@@ -2,49 +2,60 @@
 
 ## 概要
 
-gitで管理されているディレクトリにおいて、
-ctagsでtagsの生成、設定を行う。
-コマンドを実行することで、gitroot/.git/tagsに生成します。
+*ctagsの生成を便利にしよう！*
 
-## 必須
-
-tpope/vim-fugitiveが必要です。
+- 非同期でtagsの生成(ファイルタイプ毎に設定可能。jsを抜くなども。)
+- Ruby/Bundlerに対応して、必要最低限のtagsのみを非同期生成
+- setl tagsの設定
 
 ## コマンド
 
-*AlpacaSetTags*
-setl tagsを実行して、.git/tagsを追加する
+*AlpacaTagsSet*
+tagsに、このプラグインで生成するtagsのパスを追加する
 
-*AlpacaUpdateTags*
-tagsを上書きします。
+*AlpacaTagsUpdate*
+tagsを生成する
+
+*AlpacaTagsUpdateBundle*
+Gemfileで指定したtagsを生成する
 
 ## 設定
 
+*g:alpaca_update_tags_config*
 filetypeの設定のオプションを設定する
 '_'では、全てのfiletypeに共通する設定を記述する
 
-*g:alpaca_update_tags_config*
-デフォルト
+g.u
 let g:alpaca_update_tags_config = {
       \ '_' : '-R --sort=yes',
       \ }
-
-*g:alpaca_update_tags_bin*
-neobundleを使用している場合のみ設定の必要なし。
-let g:alpaca_update_tags_bin = expand('~/.bundle/alpaca_update_tags/bin/create_tags_into_git')
 
 ## オススメの設定
 
 うん、らくちんですね。
 
 NeoBundleLazy 'taichouchou2/alpaca_update_tags', {
-      \ 'depends' : 'tpope/vim-fugitive',
+      \ 'depends': 'Shougo/vimproc',
       \ 'autoload' : {
-      \   'commands': ['AlpacaUpdateTags', 'AlpacaSetTags']
+      \   'commands': ['AlpacaTagsUpdate', 'AlpacaTagsSet', 'AlpacaTagsUpdateBundle']
       \ }}
 
-aug MyUpdateTags
+" example...
+let g:alpaca_update_tags_config = {
+      \ '_' : '-R --sort=yes --languages-=js',
+      \ 'javascript' : '--languages+=js',
+      \ 'scss' : '--languages+=scss',
+      \ 'sass' : '--languages+=sass',
+      \ 'css' : '--languages+=css',
+      \ 'java' : '--languages+=java $JAVA_HOME/src',
+      \ 'ruby': '--languages=Ruby',
+      \ }
+
+aug AlpacaUpdateTags
   au!
-  au FileWritePost,BufWritePost * AlpacaUpdateTags
-  au FileReadPost,BufEnter * AlpacaSetTags
+  au FileWritePost,BufWritePost * AlpacaTagsUpdate
+  au FileWritePost,BufWritePost Gemfile AlpacaTagsUpdateBundle
+  au FileReadPost,BufEnter * AlpacaTagsSet
 aug END
+
+
