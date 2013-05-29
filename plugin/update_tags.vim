@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: update_tags.vim
 " AUTHOR:  Hiroyuki Ishii <alprhcp666@gmail.com>
-" Last Modified: 2013-03-17
+" Last Modified: 2013-05-30
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,18 +29,20 @@ if exists('g:loaded_update_tags') && g:loaded_update_tags
 endif
 let g:loaded_update_tags = 1
 
+let s:save_cpo = &cpo
+set cpo&vim
+
+" 初期化
 if !exists('g:alpaca_update_tags_config')
   let g:alpaca_update_tags_config = {
         \ '_' : '-R --sort=yes',
         \ }
 endif
+let g:alpaca_update_tags_root_dir = expand("<sfile>:p:h:h")
 
-if !exists('g:alpaca_update_tags_bin') && exists('g:neobundle#default_options')
-  let g:alpaca_update_tags_bin =
-        \ neobundle#get_neobundle_dir() . '/alpaca_update_tags/bin/create_tags_into_git'
-else
-  echohl Error | echomsg 'g:alpaca_update_tags_binを設定してください' | echohl None
-endif
+command! AlpacaTagsUpdate call update_tags#update_tags()
+command! AlpacaTagsUpdateBundle call update_tags#update_bundle_tags()
+command! AlpacaTagsSet call update_tags#set_tags()
 
-command! AlpacaUpdateTags call update_tags#update_tags()
-command! AlpacaSetTags call update_tags#set_tags()
+let &cpo = s:save_cpo
+unlet s:save_cpo

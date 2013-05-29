@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: update_tags.vim
 " AUTHOR:  Hiroyuki Ishii <alprhcp666@gmail.com>
-" Last Modified: 2013-03-17
+" Last Modified: 2013-05-30
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,14 +24,23 @@
 " }}}
 "=============================================================================
 
-" figitiveが必要
 " common
+let s:git_root_cache = {}
 function! s:current_git() "{{{
-  if !exists('b:git_dir')
-    return ''
+  let current_dir = getcwd()
+  if has_key(s:git_root_cache, current_dir)
+    return s:git_root_cache[current_dir]
   endif
 
-  return substitute(b:git_dir, '/.git$', '', 'g')
+  let git_root = system("git rev-parse --show-toplevel")
+  if git_root =~ "fatal: Not a git repository"
+    " throw "No a git repository."
+    return ""
+  endif
+
+  let s:git_root_cache[current_dir] = substitute(git_root, '\n', '', 'g')
+
+  return s:git_root_cache[current_dir]
 endfunction"}}}
 function! s:iconv(expr, from, to) "{{{
   if a:from == '' || a:to == '' || a:from ==? a:to
@@ -52,8 +61,8 @@ function! s:filetype() "{{{
 
   return split( &filetype, '\.' )[0]
 endfunction"}}}
-function! s:system(...) "{{{
-  let command = g:alpaca_update_tags_bin
+function! s:system(command, ...) "{{{
+  let command = a:command
   let input = a:0 >= 1 ? a:1 : ''
   let command = s:iconv(command, &encoding, 'char')
   let input = s:iconv(input, &encoding, 'char')
@@ -63,27 +72,36 @@ function! s:system(...) "{{{
         \ vimproc#system_bg(command_and_option) : system(command_and_option)
 
   let output = substitute(s:iconv(output, 'char', &encoding), '\n$', '', '')
+
   return output
 endfunction"}}}
-
-" update_tags
-function! s:get_value(key) "{{{
+function! s:get_command(name) "{{{
+  let cmd = g:alpaca_update_tags_root_dir . "/bin/" . a:name
+  if executable(cmd)
+    return cmd
+  else
+    throw "Error occurd. " . cmd " command is not found."
+  endif
+endfunction"}}}
+function! s:get_update_tags_option_by(key) "{{{
   if has_key(g:alpaca_update_tags_config, a:key)
     return g:alpaca_update_tags_config[a:key]
   else
     return ''
   endif
 endfunction"}}}
-function! s:get_options() "{{{
+
+" update_tags
+function! s:get_update_tags_options() "{{{
   let options = []
 
-  call add(options, s:get_value('_'))
-  call add(options, s:get_value(s:filetype()))
+  call add(options, s:get_update_tags_option_by('_'))
+  call add(options, s:get_update_tags_option_by(s:filetype()))
 
   let option = join(options, ' ')
 
-  if option =~ '^\s*$' && s:get_value('default')
-    let option = s:get_value('default')
+  if option =~ '^\s*$' && s:get_update_tags_option_by('default')
+    let option = s:get_update_tags_option_by('default')
   endif
 
   return option
@@ -94,17 +112,27 @@ function! update_tags#update_tags() "{{{
     return -1
   endif
 
-  call s:system(s:get_options())
+  let command = s:get_command("create_tags_into_git")
+  call s:system(command, s:get_update_tags_options())
+endfunction"}}}
+
+" update_bundle_tags
+function! update_tags#update_bundle_tags() "{{{
+  let command = s:get_command("create_bundle_tags_into_git")
+  let option = s:get_update_tags_option_by('default')
+  let option .= " " . s:get_update_tags_option_by('ruby')
+  call s:system(command, s:get_update_tags_options())
 endfunction"}}}
 
 " set_tags
 function! update_tags#set_tags() "{{{
   let current_git_root = s:current_git()
 
-  if filereadable(current_git_root.'tags')
-    execute "setl tags+=" . expand(current_git_root.'tags')
+  if filereadable(current_git_root.'/.git/working_dir.tags')
+    execute "setl tags+=" . expand(current_git_root.'/.git/working_dir.tags')
   endif
-  if filereadable(current_git_root.'.git/tags')
-    execute "setl tags+=" . expand(current_git_root.'.git/tags')
+  if filereadable(current_git_root.'/.git/gem.tags')
+    execute "setl tags+=" . expand(current_git_root.'/.git/gem.tags')
   endif
 endfunction"}}}
+
