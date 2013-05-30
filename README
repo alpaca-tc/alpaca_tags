@@ -54,6 +54,7 @@ let g:alpaca_update_tags_config = {
 aug AlpacaUpdateTags
   au!
   au FileWritePost,BufWritePost * AlpacaTagsUpdate
+  " g:alpaca_update_tags_config.rubyを設定しないと、酷く大きいtagsになってしまいます
   au FileWritePost,BufWritePost Gemfile AlpacaTagsUpdateBundle
   au FileReadPost,BufEnter * AlpacaTagsSet
 aug END
