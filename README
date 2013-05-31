@@ -4,36 +4,38 @@
 
 *ctagsの生成を便利にしよう！*
 
-- 非同期でtagsの生成(ファイルタイプ毎に設定可能。jsを抜くなども。)
+- vimprocを使って、非同期でtagsの生成
 - Ruby/Bundlerに対応して、必要最低限のtagsのみを非同期生成
-- setl tagsの設定
 
 ## コマンド
 
 *AlpacaTagsSet*
-tagsに、このプラグインで生成するtagsのパスを追加する
+sel tagsの自動化
 
 *AlpacaTagsUpdate*
-tagsを生成する
+Git配下のディレクトリを対象にtagsを生成する
 
-*AlpacaTagsUpdateBundle*
-Gemfileで指定したtagsを生成する
+*AlpacaTagsBundle*
+Git直下のGemfileを元にtagsを生成する。
 
 ## 設定
 
 *g:alpaca_update_tags_config*
-filetypeの設定のオプションを設定する
-'_'では、全てのfiletypeに共通する設定を記述する
+自身でオプションを作る
+'_'では、デフォルトする設定を記述する
 
 g.u
 let g:alpaca_update_tags_config = {
       \ '_' : '-R --sort=yes',
+      \ 'ruby' : '--languages=Ruby',
       \ }
+
+`:AlpacaTagsUpdate ruby`で、`ctags -R --sort=yes --languages=Ruby`が実行される。
 
 ## オススメの設定
 
-うん、らくちんですね。
-
+```
+" インストールはNeoBundleで一発。
 NeoBundleLazy 'taichouchou2/alpaca_update_tags', {
       \ 'depends': 'Shougo/vimproc',
       \ 'autoload' : {
@@ -41,22 +43,31 @@ NeoBundleLazy 'taichouchou2/alpaca_update_tags', {
       \ }}
 
 " example...
+" 適切なlanguageは`ctags --list-maps=all`で見つけてください。人によりますので。
 let g:alpaca_update_tags_config = {
-      \ '_' : '-R --sort=yes --languages-=js',
-      \ 'javascript' : '--languages+=js',
-      \ 'scss' : '--languages+=scss',
-      \ 'sass' : '--languages+=sass',
-      \ 'css' : '--languages+=css',
-      \ 'java' : '--languages+=java $JAVA_HOME/src',
-      \ 'ruby': '--languages=Ruby',
+      \ '_' : '-R --sort=yes',
+      \ 'js' : '--languages=+js',
+      \ '-js' : '--languages=-js,JavaScript',
+      \ 'vim' : '--languages=+Vim,vim',
+      \ '-vim' : '--languages=-Vim,vim',
+      \ '-style': '--languages=-css,sass,scss,js,JavaScript,html',
+      \ 'scss' : '--languages=+scss --languages=-css,sass',
+      \ 'sass' : '--languages=+sass --languages=-css,scss',
+      \ 'css' : '--languages=+css',
+      \ 'java' : '--languages=+java $JAVA_HOME/src',
+      \ 'ruby': '--languages=+Ruby',
+      \ 'coffee': '--languages=+coffee',
+      \ '-coffee': '--languages=-coffee',
+      \ 'bundle': '--languages=+Ruby --languages=-css,sass,scss,js,JavaScript,coffee',
       \ }
 
 aug AlpacaUpdateTags
   au!
-  au FileWritePost,BufWritePost * AlpacaTagsUpdate
-  " g:alpaca_update_tags_config.rubyを設定しないと、酷く大きいtagsになってしまいます
+  au FileWritePost,BufWritePost * AlpacaTagsUpdate -style
+  " bundleのオプションは自動で追加して実行します。
   au FileWritePost,BufWritePost Gemfile AlpacaTagsUpdateBundle
   au FileReadPost,BufEnter * AlpacaTagsSet
 aug END
+```
 
 
