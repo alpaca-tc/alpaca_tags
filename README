@@ -7,6 +7,8 @@
 - vimprocを使って、非同期でtagsの生成
 - Ruby/Bundlerに対応して、必要最低限のtagsのみを非同期生成
 
+![適当な操作](http://gifzo.net/BKv9ukBQ22q.gif)
+
 ## コマンド
 
 *AlpacaTagsSet*
