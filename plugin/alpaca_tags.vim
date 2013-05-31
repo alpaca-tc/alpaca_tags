@@ -40,9 +40,11 @@ if !exists('g:alpaca_update_tags_config')
 endif
 let g:alpaca_update_tags_root_dir = expand("<sfile>:p:h:h")
 
-command! AlpacaTagsUpdate call update_tags#update_tags()
-command! AlpacaTagsBundle call update_tags#update_bundle_tags()
-command! AlpacaTagsSet call update_tags#set_tags()
+command! -nargs=* -complete=customlist,alpaca_tags#complete_source
+      \ AlpacaTagsUpdate call alpaca_tags#update_tags(<q-args>)
+command! -nargs=* -complete=customlist,alpaca_tags#complete_source
+      \ AlpacaTagsBundle call alpaca_tags#update_bundle_tags(<q-args>)
+command! -nargs=0 AlpacaTagsSet call alpaca_tags#set_tags()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

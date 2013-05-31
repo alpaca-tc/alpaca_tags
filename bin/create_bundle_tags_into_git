@@ -2,7 +2,8 @@
 
 git_root_dir=`git rev-parse --show-toplevel`
 
+echo $@
 if [ -d "${git_root_dir}" ]; then
     cd ${git_root_dir}
-    bundle show --paths | xargs ctags $1 -R -f ${git_root_dir}/.git/gem.tags
+    bundle show --paths | xargs ctags $@ -f ${git_root_dir}/.git/gem.tags
 fi

@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: update_tags.vim
+" FILE: alpaca_tags.vim
 " AUTHOR:  Hiroyuki Ishii <alprhcp666@gmail.com>
 " Last Modified: 2013-05-30
 " License: MIT license  {{{
@@ -26,22 +26,9 @@
 
 " common
 let s:git_root_cache = {}
-function! s:current_git() "{{{
-  let current_dir = getcwd()
-  if has_key(s:git_root_cache, current_dir)
-    return s:git_root_cache[current_dir]
-  endif
 
-  let git_root = system("git rev-parse --show-toplevel")
-  if git_root =~ "fatal: Not a git repository"
-    " throw "No a git repository."
-    return ""
-  endif
-
-  let s:git_root_cache[current_dir] = substitute(git_root, '\n', '', 'g')
-
-  return s:git_root_cache[current_dir]
-endfunction"}}}
+" utils"{{{
+" For command
 function! s:iconv(expr, from, to) "{{{
   if a:from == '' || a:to == '' || a:from ==? a:to
     return a:expr
@@ -75,6 +62,24 @@ function! s:system(command, ...) "{{{
 
   return output
 endfunction"}}}
+
+" Get path
+function! s:current_git() "{{{
+  let current_dir = getcwd()
+  if has_key(s:git_root_cache, current_dir)
+    return s:git_root_cache[current_dir]
+  endif
+
+  let git_root = system("git rev-parse --show-toplevel")
+  if git_root =~ "fatal: Not a git repository"
+    " throw "No a git repository."
+    return ""
+  endif
+
+  let s:git_root_cache[current_dir] = substitute(git_root, '\n', '', 'g')
+
+  return s:git_root_cache[current_dir]
+endfunction"}}}
 function! s:get_command(name) "{{{
   let cmd = g:alpaca_update_tags_root_dir . "/bin/" . a:name
   if executable(cmd)
@@ -83,6 +88,29 @@ function! s:get_command(name) "{{{
     throw "Error occurd. " . cmd " command is not found."
   endif
 endfunction"}}}
+
+" For option
+function! s:parse_options(args)"{{{
+  return split(a:args, " ")
+endfunction"}}}
+function! s:get_update_tags_options(keys) "{{{
+  let options = []
+
+  call add(options, s:get_update_tags_option_by('_'))
+  for key in a:keys
+    let opt = s:get_update_tags_option_by(key)
+    if !empty(opt)
+      call add(options, opt)
+    endif
+  endfor
+
+  if empty(options) && s:get_update_tags_option_by('default')
+    let option = s:get_update_tags_option_by('default')
+  endif
+
+  let option = join(options, ' ')
+  return option
+endfunction"}}}
 function! s:get_update_tags_option_by(key) "{{{
   if has_key(g:alpaca_update_tags_config, a:key)
     return g:alpaca_update_tags_config[a:key]
@@ -90,42 +118,35 @@ function! s:get_update_tags_option_by(key) "{{{
     return ''
   endif
 endfunction"}}}
+"}}}
 
 " update_tags
-function! s:get_update_tags_options() "{{{
-  let options = []
-
-  call add(options, s:get_update_tags_option_by('_'))
-  call add(options, s:get_update_tags_option_by(s:filetype()))
-
-  let option = join(options, ' ')
-
-  if option =~ '^\s*$' && s:get_update_tags_option_by('default')
-    let option = s:get_update_tags_option_by('default')
-  endif
-
-  return option
-endfunction"}}}
-function! update_tags#update_tags() "{{{
+function! alpaca_tags#update_tags(args) "{{{
   let git_root_dir = s:current_git()
+
   if git_root_dir == ''
     return -1
   endif
 
   let command = s:get_command("create_tags_into_git")
-  call s:system(command, s:get_update_tags_options())
+  let parse_opt = s:parse_options(a:args)
+  let option = s:get_update_tags_options(parse_opt)
+  return s:system(command, option)
 endfunction"}}}
 
 " update_bundle_tags
-function! update_tags#update_bundle_tags() "{{{
+function! alpaca_tags#update_bundle_tags(args) "{{{
+  let parse_opt = s:parse_options(a:args)
+  if empty(parse_opt)
+    let parse_opt = ["bundle"]
+  endif
+  let option = s:get_update_tags_options(parse_opt)
   let command = s:get_command("create_bundle_tags_into_git")
-  let option = s:get_update_tags_option_by('default')
-  let option .= " " . s:get_update_tags_option_by('ruby')
-  call s:system(command, s:get_update_tags_options())
+  return s:system(command, option)
 endfunction"}}}
 
 " set_tags
-function! update_tags#set_tags() "{{{
+function! alpaca_tags#set_tags() "{{{
   let current_git_root = s:current_git()
 
   if filereadable(current_git_root.'/.git/working_dir.tags')
@@ -136,3 +157,18 @@ function! update_tags#set_tags() "{{{
   endif
 endfunction"}}}
 
+" complete source
+function! alpaca_tags#complete_source(arglead, cmdline, cursorpos) "{{{
+  if !exists("s:options_cache")
+    let options = copy(g:alpaca_update_tags_config)
+    call remove(options, "_")
+    let s:options_cache = sort(keys(options))
+  endif
+
+  let arglead = a:arglead
+  if empty(arglead)
+    return s:options_cache
+  endif
+
+  return filter(copy(s:options_cache), 'v:val =~ "^' . arglead . '"')
+endfunction"}}}

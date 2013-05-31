@@ -1,9 +1,8 @@
 #!/bin/sh
 
+echo $@
 git_root_dir=`git rev-parse --show-toplevel`
-
 if [ -d "${git_root_dir}" ]; then
-    echo $1
-    cd ${git_root_dir}
-    ctags $1 -f ${git_root_dir}/.git/working_dir.tags ${git_root_dir}
+  cd ${git_root_dir}
+  ctags $@ -f ${git_root_dir}/.git/working_dir.tags ${git_root_dir}
 fi
