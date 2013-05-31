@@ -41,7 +41,7 @@ endif
 let g:alpaca_update_tags_root_dir = expand("<sfile>:p:h:h")
 
 command! AlpacaTagsUpdate call update_tags#update_tags()
-command! AlpacaTagsUpdateBundle call update_tags#update_bundle_tags()
+command! AlpacaTagsBundle call update_tags#update_bundle_tags()
 command! AlpacaTagsSet call update_tags#set_tags()
 
 let &cpo = s:save_cpo
