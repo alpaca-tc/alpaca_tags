@@ -7,12 +7,12 @@
 - vimprocを使って、非同期でtagsの生成
 - Ruby/Bundlerに対応して、必要最低限のtagsのみを非同期生成
 
-![適当な操作](http://gifzo.net/BKv9ukBQ22q.gif)
+![Demo 実は少しミスってる](http://gifzo.net/BKv9ukBQ22q.gif)
 
 ## コマンド
 
 *AlpacaTagsSet*
-sel tagsの自動化
+setl tagsの自動化
 
 *AlpacaTagsUpdate*
 Git配下のディレクトリを対象にtagsを生成する
@@ -37,7 +37,7 @@ let g:alpaca_update_tags_config = {
 ## オススメの設定
 
 ```
-" インストールはNeoBundleで一発。
+" NeoBundle
 NeoBundleLazy 'taichouchou2/alpaca_update_tags', {
       \ 'depends': 'Shougo/vimproc',
       \ 'autoload' : {
@@ -45,6 +45,7 @@ NeoBundleLazy 'taichouchou2/alpaca_update_tags', {
       \ }}
 
 " example...
+" ~/.ctagsにctagsの設定ファイルを設置します。現在無い人は、このディレクトリ内の.ctagsをコピーしてください。
 " 適切なlanguageは`ctags --list-maps=all`で見つけてください。人によりますので。
 let g:alpaca_update_tags_config = {
       \ '_' : '-R --sort=yes',
@@ -72,4 +73,6 @@ aug AlpacaUpdateTags
 aug END
 ```
 
+## TODO
 
+- Gemfile以外のnpm, python ...etcのtags生成機能を追加

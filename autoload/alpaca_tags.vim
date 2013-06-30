@@ -131,7 +131,6 @@ function! alpaca_tags#update_tags(args) "{{{
   let command = s:get_command("create_tags_into_git")
   let parse_opt = s:parse_options(a:args)
   let option = s:get_update_tags_options(parse_opt)
-  let g:huga = option
   return s:system(command, option)
 endfunction"}}}
 
