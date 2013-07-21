@@ -28,7 +28,7 @@ let V = vital#of('unite.vim')
 let s:C = V.import('System.Cache')
 let s:cache_dir = g:unite_data_directory . '/alpaca_tags'
 
-function s:fname2cachename(fname) "{{{
+function! s:fname2cachename(fname) "{{{
   return substitute(a:fname, '[\/]', '+=', 'g')
 endfunction"}}}
 
@@ -45,21 +45,21 @@ let s:Cache = {
 
 function! s:Cache.new(source) "{{{
   let instance = copy(self)
-  let instance.source = a:source
+  call instance.constructor(a:source)
   call remove(instance, 'new')
-  call self.initialize(instance)
+  call remove(instance, 'constructor')
 
   return instance
 endfunction"}}}
 
-function! s:Cache.initialize(instance) "{{{
-  let instance = a:instance
-  let name = instance.source.name
-  let instance.name = name
-  let instance.directory = instance.get_directory()
+function! s:Cache.constructor(source) "{{{
+  let self.source = a:source
+  let name = self.source.name
+  let self.name = name
+  let self.directory = self.get_directory()
 
-  if !isdirectory(instance.directory)
-    call mkdir(instance.directory, 'p')
+  if !isdirectory(self.directory)
+    call mkdir(self.directory, 'p')
   endif
 endfunction"}}}
 
@@ -78,8 +78,8 @@ function! s:Cache.read(fname) "{{{
 endfunction"}}}
 
 function! s:Cache.write(fname, data) "{{{
-  if type(a:data) != type([])
-    let data = [a:data]
+  if type(a:data) != type('')
+    let data = [string(a:data)]
   else
     let data = a:data
   endif
