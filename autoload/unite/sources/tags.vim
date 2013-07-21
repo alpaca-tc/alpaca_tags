@@ -32,7 +32,12 @@ let s:source = {
       \ 'syntax': 'uniteSource__Tag',
       \}
 
-let s:cache = alpaca_tags#cache#new(s:source)
+function! unite#sources#tags#cacher()
+  if !exists('s:cacher')
+    let s:cacher = alpaca_tags#cache#new(s:source)
+  endif
+  return s:cacher
+endfunction
 
 function! unite#sources#tags#define() "{{{
   return has('ruby') ? s:source : {}

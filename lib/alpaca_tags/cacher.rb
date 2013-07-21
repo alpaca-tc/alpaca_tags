@@ -1,6 +1,6 @@
 module AlpacaTags::Cacher
   autoload :Base, 'alpaca_tags/cacher/base'
-  autoload :VimCacher, 'alpaca_tags/cacher/vim_cacher'
+  autoload :Vim, 'alpaca_tags/cacher/vim'
 
   mattr_accessor :default_cacher
 
