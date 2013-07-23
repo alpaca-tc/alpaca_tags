@@ -1,7 +1,7 @@
 require 'json'
 
-module AlpacaTags::Cacher
-  class Vim < AlpacaTags::Cacher::Base
+module AlpacaTags::Cache
+  class Vim < AlpacaTags::Cache::Base
     def read(name)
       file = File.open(file_path(name), 'r')
       data = file.read

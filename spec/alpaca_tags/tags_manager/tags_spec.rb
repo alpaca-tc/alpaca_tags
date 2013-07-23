@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe AlpacaTags::TagsManager::Tags do
+describe AlpacaTags::Manager::Tags do
   let(:test_tags) { "#{root}/spec/support/test.tags" }
   let(:root) { File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..')) }
 
-  let(:instance) { AlpacaTags::TagsManager::Tags.new(test_tags) }
+  let(:instance) { AlpacaTags::Manager::Tags.new(test_tags) }
   subject { instance }
 
   describe 'Instance Methods' do

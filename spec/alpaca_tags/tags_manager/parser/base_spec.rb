@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe AlpacaTags::TagsManager::Parser do
+describe AlpacaTags::Manager::Parser do
   let(:line) { %Q!#{tagname}	#{tagfile}	#{tagaddress};"	#{extensions}! }
   let(:tagname) { 'method' }
   let(:tagfile) { '/Users/stub/path/test_spec.rb' }
   let(:tagaddress) { %Q!/^    def #{tagname}$/! }
   let(:extensions) { 'f' }
-  let(:instance) { AlpacaTags::TagsManager::Parser::Base.new(line) }
+  let(:instance) { AlpacaTags::Manager::Parser::Base.new(line) }
 
   subject { instance }
 

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe AlpacaTags::TagsManager::Parser::Vim do
+describe AlpacaTags::Manager::Parser::Vim do
   let(:line) { '' }
-  subject { AlpacaTags::TagsManager::Parser::Vim.new(line) }
+  subject { AlpacaTags::Manager::Parser::Vim.new(line) }
 
   describe 'ancestors' do
-    it { should be_a_kind_of(AlpacaTags::TagsManager::Parser::Base) }
+    it { should be_a_kind_of(AlpacaTags::Manager::Parser::Base) }
   end
 
   describe '#to_h' do
