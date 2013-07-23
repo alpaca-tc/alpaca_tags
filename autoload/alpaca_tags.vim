@@ -81,7 +81,7 @@ function! s:current_git() "{{{
   return s:git_root_cache[current_dir]
 endfunction"}}}
 function! s:get_command(name) "{{{
-  let cmd = g:alpaca_update_tags_root_dir . "/bin/" . a:name
+  let cmd = g:alpaca_tags_root_dir . "/bin/" . a:name
   if executable(cmd)
     return cmd
   else

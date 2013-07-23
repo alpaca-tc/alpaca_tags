@@ -7,18 +7,16 @@ module AlpacaTags::Cache
       data = file.read
       file.close
       
-      data.present? ? JSON.parse(data) : {} 
+      -> {
+        $SAFE = 4
+        data.present? ? JSON.parse(data) : {} 
+      }.call
     end
 
     def write(name, data)
       File.open(file_path(name), 'w') do |file|
         file.write data.to_json
       end
-    end
-
-    private
-    def file_path(name)
-      "#{directory_path}/#{path2string(name)}"
     end
   end
 end

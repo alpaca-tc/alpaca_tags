@@ -1,19 +1,20 @@
 function! alpaca_tags#ruby#initialize() "{{{
-  if !has('ruby')
+  if !has('ruby') || !g:alpaca_tags_enable_unite
     return 0
   endif
 
-  let cacher = unite#sources#tags#cacher()
-  let default_directory = cacher.directory
-
   ruby << EOF
-  plugin_current_dir = VIM.evaluate('g:alpaca_update_tags_root_dir')
-  require "#{plugin_current_dir}/lib/vim"
-  require "#{plugin_current_dir}/lib/alpaca_tags"
+  plugin_current_dir = VIM.evaluate('g:alpaca_tags_root_dir')
+  $:.unshift("#{plugin_current_dir}/lib")
+  require 'vim'
+  require 'alpaca_tags'
 
-  AlpacaTags::TagsManager.initialize!
-  AlpacaTags::TagsManager::Parser.default_parser = AlpacaTags::TagsManager::Parser::Vim
-  AlpacaTags::Cacher.default_cacher = AlpacaTags::Cacher::Vim
-  AlpacaTags::Cacher::Base.default_directory = VIM.evaluate('default_directory')
+  cache_dir = Vim.get('g:alpaca_tags_cache_directory')
+
+  AlpacaTags.configure do |c|
+    c.default_cache_path = cache_dir
+    c.default_cache = ::AlpacaTags::Cache::Vim
+    c.default_tag_parser = ::AlpacaTags::TagParser::CacheAsVimObject
+  end
 EOF
 endfunction"}}}

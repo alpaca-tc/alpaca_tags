@@ -3,6 +3,7 @@ module AlpacaTags
     def initialize
       add_setting :default_cache_path, default: '/tmp'
       add_setting :default_cache, default: ::AlpacaTags::Cache::Ruby
+      add_setting :default_tag_parser, default: ::AlpacaTags::TagParser::CtagsExuberant
       add_setting :enable_caching, default: true
     end
 

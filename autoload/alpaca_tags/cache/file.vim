@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: cache.vim
+" FILE: file.vim
 " AUTHOR: Ishii Hiroyuki <alprhcp666@gmail.com>
 " Last Modified: 2013-07-21
 " License: MIT license  {{{
@@ -33,29 +33,27 @@ function! s:fname2cachename(fname) "{{{
 endfunction"}}}
 
 " Define Cache"{{{
-function! alpaca_tags#cache#new(source) "{{{
-  return s:Cache.new(a:source)
+function! alpaca_tags#cache#file#new(source) "{{{
+  return s:FileCache.new(a:source)
 endfunction"}}}
 
-let s:Cache = {
-      \ 'name' : '',
+let s:FileCache = {
+      \ 'path' : '',
       \ 'directory' : '',
       \ 'cache' : {},
       \ }
 
-function! s:Cache.new(source) "{{{
+function! s:FileCache.new(path) "{{{
   let instance = copy(self)
-  call instance.constructor(a:source)
+  call instance.constructor(a:path)
   call remove(instance, 'new')
   call remove(instance, 'constructor')
 
   return instance
 endfunction"}}}
 
-function! s:Cache.constructor(source) "{{{
-  let self.source = a:source
-  let name = self.source.name
-  let self.name = name
+function! s:FileCache.constructor(path) "{{{
+  let self.path = a:path
   let self.directory = self.get_directory()
 
   if !isdirectory(self.directory)
@@ -63,29 +61,33 @@ function! s:Cache.constructor(source) "{{{
   endif
 endfunction"}}}
 
-function! s:Cache.get_directory() "{{{
-  return s:cache_dir . '/' . s:fname2cachename(self.name)
+function! s:FileCache.get_directory() "{{{
+  return s:cache_dir . '/' . s:fname2cachename(self.path)
 endfunction"}}}
 
-function! s:Cache.read(fname) "{{{
-  let fname = a:fname
-  if !s:C.check_old_cache(self.directory, fname)
-    let data = s:C.readfile(self.directory, fname)
-    sandbox let self.cache[fname] = eval(data[0])
+function! s:FileCache.read(fname) "{{{
+  let fname = s:fname2cachename(a:fname)
+  if has_key(self.cache, fname)
+    return self.cache[fname]
   endif
+
+  let data = s:C.readfile(self.directory, fname)
+  sandbox let self.cache[fname] = eval(data[0])
 
   return self.cache[fname]
 endfunction"}}}
 
-function! s:Cache.write(fname, data) "{{{
+function! s:FileCache.write(fname, data) "{{{
+  let fname = s:fname2cachename(a:fname)
+
   if type(a:data) != type('')
     let data = [string(a:data)]
   else
     let data = a:data
   endif
 
-  let self.cache[a:fname] = data
+  let self.cache[fname] = data
 
-  return s:C.writefile(self.directory, a:fname, data)
+  return s:C.writefile(self.directory, fname, data)
 endfunction"}}}
 "}}}

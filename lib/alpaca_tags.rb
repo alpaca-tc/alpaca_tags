@@ -8,7 +8,8 @@ module AlpacaTags
   autoload :Configuration, 'alpaca_tags/configuration'
   autoload :Manager, 'alpaca_tags/manager'
   autoload :TagSet, 'alpaca_tags/tag_set'
-  autoload :Tags, 'alpaca_tags/tags'
+  autoload :TagFile, 'alpaca_tags/tag_file'
+  autoload :TagParser, 'alpaca_tags/tag_parser'
 
   def self.configuration
     @configuration ||= Configuration.new

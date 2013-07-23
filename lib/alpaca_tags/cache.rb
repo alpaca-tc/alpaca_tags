@@ -11,6 +11,10 @@ module AlpacaTags::Cache
     cache.write(name, value)
   end
 
+  def self.exists?(name)
+    cache.exists?(name)
+  end
+
   private
   def self.cache
     ::AlpacaTags.configuration.default_cache.new

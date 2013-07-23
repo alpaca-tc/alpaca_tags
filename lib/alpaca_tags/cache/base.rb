@@ -12,6 +12,10 @@ module AlpacaTags::Cache
       Dir["#{default_directory}/**"]
     end
 
+    def exists?(name)
+      File.exists?(file_path(name))
+    end
+
     private
     def path2string(path)
       path.gsub('/', '+=')

@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: update_tags.vim
-" AUTHOR:  Hiroyuki Ishii <alprhcp666@gmail.com>
-" Last Modified: 2013-05-30
+" FILE: vim.vim
+" AUTHOR: Ishii Hiroyuki <alprhcp666@gmail.com>
+" Last Modified: 2013-07-24
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,30 +24,30 @@
 " }}}
 "=============================================================================
 
-if exists('g:loaded_update_tags') && g:loaded_update_tags
-  finish
-endif
-let g:loaded_update_tags = 1
+" Cache variable is shared
+let s:caching = {}
 
-let s:save_cpo = &cpo
-set cpo&vim
 
-" 初期化
-if !exists('g:alpaca_update_tags_config')
-  let g:alpaca_update_tags_config = {
-        \ '_' : '-R --sort=yes',
-        \ }
-endif
+" Define Accessor"{{{
+function! alpaca_tags#cache#vim#new(values) "{{{
+  return alpaca_tags#cache#base#extends(s:VimCacheAccessor).new(values)
+endfunction"}}}
 
-let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
-let g:alpaca_tags_enable_unite = get(g:, 'alpaca_tags_enable_unite', 0)
-let g:alpaca_tags_cache_directory = get(g:, 'alpaca_tags_cache_directory', g:unite_data_directory . '/alpaca_tags')
+let s:VimCacheAccessor = {
+      \ 'cache' : s:caching,
+      \ }
 
-command! -nargs=* -complete=customlist,alpaca_tags#complete_source
-      \ AlpacaTagsUpdate call alpaca_tags#update_tags(<q-args>)
-command! -nargs=* -complete=customlist,alpaca_tags#complete_source
-      \ AlpacaTagsBundle call alpaca_tags#update_bundle_tags(<q-args>)
-command! -nargs=0 AlpacaTagsSet call alpaca_tags#set_tags()
+function! s:VimCacheAccessor.exists() "{{{
+  return has_key(self.cache, self.key)
+endfunction"}}}
 
-let &cpo = s:save_cpo
-unlet s:save_cpo
+function! s:VimCacheAccessor.find() "{{{
+  return self.cache[self.key]
+endfunction"}}}
+
+function! s:VimCacheAccessor.create() "{{{
+  " Override in instance.
+  " let self.cache[self.key] = data
+endfunction"}}}
+"}}}
+
