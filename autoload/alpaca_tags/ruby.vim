@@ -2,6 +2,7 @@ function! alpaca_tags#ruby#initialize() "{{{
   if !has('ruby') || !g:alpaca_tags_enable_unite
     return 0
   endif
+  call alpaca_tags#variables#init()
 
   ruby << EOF
   plugin_current_dir = VIM.evaluate('g:alpaca_tags_root_dir')

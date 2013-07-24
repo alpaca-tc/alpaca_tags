@@ -40,8 +40,6 @@ if !exists('g:alpaca_update_tags_config')
 endif
 
 let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
-let g:alpaca_tags_enable_unite = get(g:, 'alpaca_tags_enable_unite', 0)
-let g:alpaca_tags_cache_directory = get(g:, 'alpaca_tags_cache_directory', g:unite_data_directory . '/alpaca_tags')
 
 command! -nargs=* -complete=customlist,alpaca_tags#complete_source
       \ AlpacaTagsUpdate call alpaca_tags#update_tags(<q-args>)
