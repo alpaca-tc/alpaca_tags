@@ -75,6 +75,10 @@ function! s:source.gather_candidates(args, context) "{{{
   " let candidates = s:candidates_from_cache(a:args, a:context)
   echo 'Create new taglist'
 
+  if empty(candidates)
+    return [{'word' : 'Not Found!', 'is_dummy' : 1}]
+  endif
+
   if len(candidates) < s:source.max_candidates
     echo 'Save cache : key is ' . input
     let s:caching[input] = deepcopy(candidates)
