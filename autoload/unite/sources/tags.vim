@@ -134,7 +134,7 @@ function! s:taglist2candidates(args, context) "{{{
     end
 
     candidate = {
-      word: tag['name'],
+      word: "#{tag['name']} #{tag['filename'].to_s}" ,
       abbr: abbr.to_s,
       kind: 'jump_list',
       action__path: tag['filename'].to_s,
