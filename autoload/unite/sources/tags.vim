@@ -56,22 +56,48 @@ function! s:source.gather_candidates(args, context) "{{{
   let input_list = split(substitute(a:context.input, '^\s*', '', 'g'))
   let input = empty(a:context.input) ? '' : input_list[0]
 
+  let cache = s:use_cache(input)
+  if !empty(cache)
+    return cache
+  endif
+
   if len(input) < 3 
-    return [{'word' : '', 'abbr' : 'You should input more than 3 charactors', 'is_dummy' : 1}]
+    return [{ 'word' : '', 'abbr' : 'You should input more than 3 characters', 'is_dummy' : 1 }]
   endif
 
   let match_tags = taglist(input)
   if type(match_tags) == type(0)
-    return [{'word' : 'No matched!', 'is_dummy' : 1}]
+    return [{'word' : 'Not Found!', 'is_dummy' : 1}]
   endif
 
   " Checking cache
   let candidates = s:candidates_from_taglist(a:args, a:context)
+  " let candidates = s:candidates_from_cache(a:args, a:context)
+  echo 'Create new taglist'
+
+  if len(candidates) < s:source.max_candidates
+    echo 'Save cache : key is ' . input
+    let s:caching[input] = deepcopy(candidates)
+  endif
 
   return candidates
-  " return s:candidates_from_cache(a:args, a:context)
 endfunction"}}}
 "}}}
+
+function! s:use_cache(input) "{{{
+  let input = a:input
+
+  if !empty(input)
+    for key in keys(s:caching)
+      if input =~ key
+        echo 'Use cache : key is ' . key
+        return deepcopy(s:caching[key])
+      endif
+    endfor
+  endif
+
+  return 0
+endfunction"}}}
 
 function! s:candidates_from_taglist(args, context) "{{{
   return s:taglist2candidates(a:args, a:context)
