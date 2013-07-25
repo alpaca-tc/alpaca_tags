@@ -23,16 +23,17 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
+
 " Define source {{{
 let s:source = {
       \ 'name': 'tags',
-      \ 'action_table': {},
       \ 'hooks': {},
       \ 'is_volatile': 1,
       \ 'syntax': 'uniteSource__Tag',
       \ 'max_candidates' : 100,
       \ 'converters': 'converter_relative_word'
       \}
+
 let s:caching = {}
 
 function! unite#sources#tags#define() "{{{
@@ -53,132 +54,10 @@ function! s:source.hooks.on_init(args, context) "{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  let input_list = split(substitute(a:context.input, '^\s*', '', 'g'))
-  let input = empty(a:context.input) ? '' : input_list[0]
-
-  let cache = s:use_cache(input)
-  if !empty(cache)
-    return cache
-  endif
-
-  if len(input) < 3 
-    return [{ 'word' : '', 'abbr' : 'You should input more than 3 characters', 'is_dummy' : 1 }]
-  endif
-
-  let match_tags = taglist(input)
-  if type(match_tags) == type(0)
-    return [{'word' : 'Not Found!', 'is_dummy' : 1}]
-  endif
-
-  " Checking cache
-  let candidates = s:candidates_from_taglist(a:args, a:context)
-  " let candidates = s:candidates_from_cache(a:args, a:context)
-  echo 'Create new taglist'
-
-  if empty(candidates)
-    return [{'word' : 'Not Found!', 'is_dummy' : 1}]
-  endif
-
-  if len(candidates) < s:source.max_candidates
-    echo 'Save cache : key is ' . input
-    let s:caching[input] = deepcopy(candidates)
-  endif
-
-  return candidates
+  let function_name = 'taglist'
+  return unite#sources#tags#{function_name}#gather_candidates(a:args, a:context)
 endfunction"}}}
 "}}}
-
-function! s:use_cache(input) "{{{
-  let input = a:input
-
-  if !empty(input)
-    for key in keys(s:caching)
-      if input =~ key
-        echo 'Use cache : key is ' . key
-        return deepcopy(s:caching[key])
-      endif
-    endfor
-  endif
-
-  return 0
-endfunction"}}}
-
-function! s:candidates_from_taglist(args, context) "{{{
-  return s:taglist2candidates(a:args, a:context)
-endfunction"}}}
-
-function! s:taglist2candidates(args, context) "{{{
-  let input = s:context2input(a:context)
-  let match_tags = s:taglist(input)
-
-  ruby << EOF
-  max_candidates = VIM.get('s:source')['max_candidates']
-  match_tags = VIM.get('match_tags')
-
-  candidates = match_tags.lazy.map { |tag|
-    method = tag['class'].nil? ? tag['name'] : "#{tag['class']}##{tag['name']}"
-    filename_len = tag['filename'].length
-
-    /(?<filename>.{,60})$/ =~ tag['filename']
-    abbr_command = tag['cmd'] ? tag['cmd'].gsub(/\/\^\s+/, '') : ''
-    abbr = sprintf('%s  @%s  %s', tag['name'], filename, "pat: #{abbr_command}" )
-
-    command = tag['cmd']
-    linenr, pattern = 0, ''
-    if command =~ /^\d\+$/
-      linenr = command - 0
-    else
-      pattern = command
-      # remove / or ? at the head and the end
-      pattern.gsub!(/^([\/?])?(.*)\1$/, '\2')
-      # unescape /
-      pattern.gsub!(/\//, '\\/')
-      # use 'nomagic'
-      pattern = '\M' + pattern
-    end
-
-    candidate = {
-      word: "#{tag['name']} #{tag['filename'].to_s}" ,
-      abbr: abbr.to_s,
-      kind: 'jump_list',
-      action__path: tag['filename'].to_s,
-      action__directory: File.dirname(tag['filename']).to_s,
-      action__tagname: tag['name'].to_s,
-      unite__source_kind: tag['kind'].to_s,
-    }
-
-    if linenr != 0
-      candidate['action__line'] = linenr
-    else
-      candidate['action__pattern'] = pattern
-    end
-
-    candidate
-  }.first(max_candidates)
-
-  VIM.let('candidates', candidates)
-EOF
-
-  return candidates
-endfunction"}}}
-
-function! s:context2input(context) "{{{
-  let input_list = split(substitute(a:context.input, '^\s*', '', 'g'))
-  return empty(a:context.input) ? '' : input_list[0]
-endfunction"}}}
-
-function! s:taglist(input) "{{{
-  if !exists('s:taglist_cache') 
-    let s:taglist_cache = {}
-  endif
-
-  if !has_key(s:taglist_cache, a:input)
-    let taglist = taglist(a:input)
-    let s:taglist_cache[a:input] = taglist
-  endif
-
-  return s:taglist_cache[a:input]
-endfunction"}}}
 
 " No used...
 function! s:candidates_from_cache(args, context) "{{{
