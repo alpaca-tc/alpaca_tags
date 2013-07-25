@@ -4,6 +4,5 @@ function! alpaca_tags#variables#init()
   endif
   let s:loaded_init = 1
 
-  let g:alpaca_tags_enable_unite = get(g:, 'alpaca_tags_enable_unite', 0)
   let g:alpaca_tags_cache_directory = get(g:, 'alpaca_tags_cache_directory', g:unite_data_directory . '/alpaca_tags')
 endfunction

@@ -41,7 +41,7 @@ endfunction"}}}
 
 function! s:cache_tags(async) "{{{
   let root_dir = s:get_root_dir()
-  if empty(root_dir) || empty(tagfiles()) || !g:alpaca_tags_enable_unite
+  if empty(root_dir) || empty(tagfiles())
     return 0
   endif
 

@@ -109,7 +109,7 @@ endfunction"}}}
 
 function! s:taglist2candidates(args, context) "{{{
   let input = s:context2input(a:context)
-  let match_tags = taglist(input)
+  let match_tags = s:taglist(input)
 
   ruby << EOF
   max_candidates = VIM.get('s:source')['max_candidates']
@@ -165,6 +165,19 @@ endfunction"}}}
 function! s:context2input(context) "{{{
   let input_list = split(substitute(a:context.input, '^\s*', '', 'g'))
   return empty(a:context.input) ? '' : input_list[0]
+endfunction"}}}
+
+function! s:taglist(input) "{{{
+  if !exists('s:taglist_cache') 
+    let s:taglist_cache = {}
+  endif
+
+  if !has_key(s:taglist_cache, a:input)
+    let taglist = taglist(a:input)
+    let s:taglist_cache[a:input] = taglist
+  endif
+
+  return s:taglist_cache[a:input]
 endfunction"}}}
 
 " No used...

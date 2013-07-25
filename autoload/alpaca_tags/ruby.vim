@@ -1,5 +1,5 @@
 function! alpaca_tags#ruby#initialize() "{{{
-  if !has('ruby') || !g:alpaca_tags_enable_unite
+  if !has('ruby')
     return 0
   endif
   call alpaca_tags#variables#init()
