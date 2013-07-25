@@ -46,6 +46,7 @@ command! -nargs=* -complete=customlist,alpaca_tags#complete_source
 command! -nargs=* -complete=customlist,alpaca_tags#complete_source
       \ AlpacaTagsBundle call alpaca_tags#update_bundle_tags(<q-args>)
 command! -nargs=0 AlpacaTagsSet call alpaca_tags#set_tags()
+command! -nargs=0 AlpacaTagsCleanCache call unite#sources#tags#taglist#clean_cache()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
