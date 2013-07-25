@@ -11,43 +11,49 @@
 
 ## コマンド
 
-*AlpacaTagsSet*
+*TagsSet*
 setl tagsの自動化
 
-*AlpacaTagsUpdate*
-Git配下のディレクトリを対象にtagsを生成する
+*Tags*
+Git配下のディレクトリを対象にctagsを実行する
 
-*AlpacaTagsBundle*
+*TagsBundle*
 Git直下のGemfileを元にtagsを生成する。
 
 ## 設定
 
-*g:alpaca_update_tags_config*
+*g:alpaca_tags_config*
 自身でオプションを作る
 '_'では、デフォルトする設定を記述する
 
 g.u
-let g:alpaca_update_tags_config = {
+let g:alpaca_tags_config = {
       \ '_' : '-R --sort=yes',
       \ 'ruby' : '--languages=Ruby',
       \ }
 
-`:AlpacaTagsUpdate ruby`で、`ctags -R --sort=yes --languages=Ruby`が実行される。
+`:TagsUpdate ruby`で、`ctags -R --sort=yes --languages=Ruby`が実行される。
 
 ## オススメの設定
 
 ```
 " NeoBundle
-NeoBundleLazy 'taichouchou2/alpaca_update_tags', {
-      \ 'depends': 'Shougo/vimproc',
+NeoBundleLazy 'alpaca-tc/alpaca_tags', {
+      \ 'rev' : 'development',
+      \ 'depends': ['Shougo/vimproc', 'Shougo/unite.vim'],
       \ 'autoload' : {
-      \   'commands': ['AlpacaTagsUpdate', 'AlpacaTagsSet', 'AlpacaTagsUpdateBundle']
+      \   'commands' : [{
+      \     'name' : 'Tags',
+      \     'complete' : 'customlist,alpaca_tags#complete_source'},
+      \     'TagsSet', 'TagsBundle'
+      \     ],
+      \   'unite_sources' : ['tags']
       \ }}
 
 " example...
 " ~/.ctagsにctagsの設定ファイルを設置します。現在無い人は、このディレクトリ内の.ctagsをコピーしてください。
 " 適切なlanguageは`ctags --list-maps=all`で見つけてください。人によりますので。
-let g:alpaca_update_tags_config = {
+let g:alpaca_tags_config = {
       \ '_' : '-R --sort=yes',
       \ 'js' : '--languages=+js',
       \ '-js' : '--languages=-js,JavaScript',
@@ -64,13 +70,16 @@ let g:alpaca_update_tags_config = {
       \ 'bundle': '--languages=+Ruby --languages=-css,sass,scss,js,JavaScript,coffee',
       \ }
 
-aug AlpacaUpdateTags
-  au!
-  au FileWritePost,BufWritePost * AlpacaTagsUpdate -style
-  " bundleのオプションは自動で追加して実行します。
-  au FileWritePost,BufWritePost Gemfile AlpacaTagsUpdateBundle
-  au FileReadPost,BufEnter * AlpacaTagsSet
-aug END
+augroup AlpacaTags
+  autocmd!
+  if exists(':Tags')
+    autocmd FileWritePost,BufWritePost * Tags -style -rspec -vim
+    autocmd FileWritePost,BufWritePost Gemfile TagsBundle -style
+    autocmd FileReadPost,BufEnter * TagsSet
+  endif
+augroup END
+
+nnoremap <expr>tt  ':Unite tags -horizontal -buffer-name=tags -input='.expand("<cword>").'<CR>'
 ```
 
 ## TODO
