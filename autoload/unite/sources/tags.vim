@@ -40,8 +40,8 @@ endfunction"}}}
 
 function! s:source.hooks.on_syntax(args, context) "{{{
   syntax match uniteSource__Tag_File /  @.\{-}  /ms=s+2,me=e-2 containedin=uniteSource__Tag contained nextgroup=uniteSource__Tag_Pat,uniteSource__Tag_Line skipwhite
-  syntax match uniteSource__Tag_Pat /pat:.\{-}\ze\s*$/ contained
   syntax match uniteSource__Tag_Line /line:.\{-}\ze\s*$/ contained
+  syntax match uniteSource__Tag_Pat /pat:.\{-}\ze\s*$/ contained
   highlight default link uniteSource__Tag_File Type
   highlight default link uniteSource__Tag_Pat Special
   highlight default link uniteSource__Tag_Line Constant

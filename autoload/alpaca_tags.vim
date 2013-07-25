@@ -90,7 +90,7 @@ function! s:get_command(name) "{{{
 endfunction"}}}
 
 " For option
-function! s:parse_options(args)"{{{
+function! s:parse_options(args) "{{{
   return split(a:args, " ")
 endfunction"}}}
 function! s:get_update_tags_options(keys) "{{{
@@ -99,7 +99,7 @@ function! s:get_update_tags_options(keys) "{{{
   call add(options, s:get_update_tags_option_by('_'))
   for key in a:keys
     let opt = s:get_update_tags_option_by(key)
-    if !empty(opt)
+    if type(opt) == type('')
       call add(options, opt)
     endif
   endfor
@@ -128,7 +128,7 @@ function! alpaca_tags#update_tags(args) "{{{
     return -1
   endif
 
-  let command = s:get_command("create_tags_into_git")
+  let command = s:get_command('create_tags_into_git')
   let parse_opt = s:parse_options(a:args)
   let option = s:get_update_tags_options(parse_opt)
   return s:system(command, option)

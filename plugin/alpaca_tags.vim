@@ -35,18 +35,18 @@ set cpo&vim
 " 初期化
 if !exists('g:alpaca_update_tags_config')
   let g:alpaca_update_tags_config = {
-        \ '_' : '-R --sort=yes',
+        \ '_' : '-R --sort=yes --languages=-js,css',
         \ }
 endif
 
 let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
 
 command! -nargs=* -complete=customlist,alpaca_tags#complete_source
-      \ AlpacaTagsUpdate call alpaca_tags#update_tags(<q-args>)
+      \ Tags call alpaca_tags#update_tags(<q-args>)
 command! -nargs=* -complete=customlist,alpaca_tags#complete_source
-      \ AlpacaTagsBundle call alpaca_tags#update_bundle_tags(<q-args>)
-command! -nargs=0 AlpacaTagsSet call alpaca_tags#set_tags()
-command! -nargs=0 AlpacaTagsCleanCache call unite#sources#tags#taglist#clean_cache()
+      \ TagsBundle call alpaca_tags#update_bundle_tags(<q-args>)
+command! -nargs=0 TagsSet call alpaca_tags#set_tags()
+command! -nargs=0 TagsCleanCache call unite#sources#tags#taglist#clean_cache()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
