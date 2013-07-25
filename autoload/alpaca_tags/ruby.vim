@@ -1,3 +1,4 @@
+" Not used this because we never use caching...
 function! alpaca_tags#ruby#initialize() "{{{
   if !has('ruby')
     return 0

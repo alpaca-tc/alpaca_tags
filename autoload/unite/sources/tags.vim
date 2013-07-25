@@ -50,7 +50,8 @@ function! s:source.hooks.on_syntax(args, context) "{{{
 endfunction"}}}
 
 function! s:source.hooks.on_init(args, context) "{{{
-  call alpaca_tags#ruby#initialize()
+  " call alpaca_tags#ruby#initialize()
+  call alpaca_tags#variables#init()
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
