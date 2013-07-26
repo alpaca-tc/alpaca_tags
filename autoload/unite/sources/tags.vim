@@ -31,6 +31,7 @@ let s:source = {
       \ 'is_volatile': 1,
       \ 'syntax': 'uniteSource__Tag',
       \ 'max_candidates' : 100,
+      \ 'is_multiline' : 1,
       \ 'converters': 'converter_relative_word'
       \}
 
@@ -39,12 +40,20 @@ function! unite#sources#tags#define() "{{{
 endfunction"}}}
 
 function! s:source.hooks.on_syntax(args, context) "{{{
-  syntax match uniteSource__Tag_File /  @.\{-}  /ms=s+2,me=e-2 containedin=uniteSource__Tag contained nextgroup=uniteSource__Tag_Pat,uniteSource__Tag_Line skipwhite
-  syntax match uniteSource__Tag_Line /line:.\{-}\ze\s*$/ contained
-  syntax match uniteSource__Tag_Pat /pat:.\{-}\ze\s*$/ contained
-  highlight default link uniteSource__Tag_File Type
-  highlight default link uniteSource__Tag_Pat Special
-  highlight default link uniteSource__Tag_Line Constant
+  syntax region uniteSource__Conceal_Word 
+        \ matchgroup=neosnippetExpandSnippets 
+        \ start='\(pattern\|line\)' end=': ' 
+        \ containedin=ALL concealends oneline
+  syntax match uniteSource__Tag_Pattern /pattern:.\{-}\s*$/ms=s,me=e-1 containedin=uniteSource__Tag contained skipwhite
+  syntax match uniteSource__Tag_File /@.\{-}\s*$/ms=s-1,me=e-1 containedin=uniteSource__Tag contains=uniteSource__TagDirectory skipwhite
+  syntax match uniteSource__Tag_Directory /.*\// containedin=uniteSource__Tag_File contained
+  syntax match uniteSource__Tag_Line /line:.\{-}\ze\s*$/ containedin=uniteSource__Tag contained
+
+  highlight default link uniteSource__Tag_Directory Directory
+  highlight default link uniteSource__Tag_Pattern Tag
+  " highlight default link uniteSource__Tag_Line Constant
+  highlight default link uniteSource__Tag_Line Tag
+  highlight default link uniteSource__Tag_File Normal
 endfunction"}}}
 
 function! s:source.hooks.on_init(args, context) "{{{
