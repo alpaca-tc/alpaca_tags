@@ -73,12 +73,9 @@ function! s:Watch.start() "{{{
   execute 'autocmd ' self.augroup_name ' CursorHold * call s:Watch.check('.self.process.pid.')'
 endfunction"}}}
 
-function! s:Watch.check() "{{{
-  echo "Hello!"
-endfunction"}}}
-
 function! s:Watch.done() "{{{
   call self.remove_autocmd(self.process.pid)
+  call unite#sources#tags#taglist#clean_cache()
   echomsg self.message
 endfunction"}}}
 
