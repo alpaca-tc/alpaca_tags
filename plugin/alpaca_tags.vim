@@ -41,12 +41,14 @@ endif
 
 if !exists('g:alpaca_tags_print_to_console') 
   let g:alpaca_tags_print_to_console = {
-        \ 'system' : 1,
-        \ 'tags_set' : 1,
+        \ 'debug' : 0,
+        \ 'setted tags' : 0,
+        \ 'created/updated tags' : 1,
         \ }
 endif
 
 let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
+let g:alpaca_tags_ctags_bin = get(g:, 'alpaca_tags_ctags_bin', 'ctags')
 
 command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
       \ Tags call alpaca_tags#create_tags#update(<q-args>)

@@ -14,7 +14,7 @@ function! alpaca_tags#set()
     endif
   endfor
 
-  if !empty(tags_setted) && g:alpaca_tags_print_to_console['tags_set']
+  if !empty(tags_setted) && g:alpaca_tags_print_to_console['setted tags']
     echomsg 'Set:' . join(tags_setted, ', ')
   endif
 endfunction

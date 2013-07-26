@@ -23,11 +23,79 @@ function! alpaca_tags#util#filetype() "{{{
   return split( &filetype, '\.' )[0]
 endfunction"}}}
 
-function! alpaca_tags#util#system(command, args) "{{{
-  let command = join([a:command, a:args], ' ')
-  if g:alpaca_tags_print_to_console['system']
+function! alpaca_tags#util#system(command, args, message) "{{{
+  let ctags_path = '--ctags_path '.g:alpaca_tags_ctags_bin
+  let args = '--ctags_args "'.a:args.'"'
+  let command = join([a:command, args, ctags_path], ' ')
+
+  if g:alpaca_tags_print_to_console['debug']
     echomsg printf('Execute command: %s', command)
   endif
 
-  return vimproc#system_bg(command)
+  if g:alpaca_tags_print_to_console['created/updated tags']
+    return s:Watch.new(vimproc#popen2(command), a:message)
+  else
+    return vimproc#system_bg(command)
+  endif
+endfunction"}}}
+
+" Watching process
+let s:Watch = {}
+let s:watch_list = {}
+
+function! s:get_augroup(pid) "{{{
+  return 'TagsWatchProcessPidIs' . a:pid
+endfunction"}}}
+
+function! s:Watch.new(process, message) "{{{
+  let instance = deepcopy(self)
+  call instance.constructor(a:process, a:message)
+  call remove(instance, 'new')
+  call remove(instance, 'constructor')
+
+  return instance
+endfunction"}}}
+
+function! s:Watch.constructor(process, message) "{{{
+  let s:watch_list[a:process.pid] = self
+  let self.process = a:process
+  let self.message = a:message
+  let self.augroup_name = s:get_augroup(self.process.pid)
+  execute 'augroup' self.augroup_name
+  call self.start()
+endfunction"}}}
+
+function! s:Watch.start() "{{{
+  let self.start_time = reltime()
+  execute 'autocmd ' self.augroup_name ' CursorHold * call s:Watch.check('.self.process.pid.')'
+endfunction"}}}
+
+function! s:Watch.check() "{{{
+  echo "Hello!"
+endfunction"}}}
+
+function! s:Watch.done() "{{{
+  call self.remove_autocmd(self.process.pid)
+  echomsg self.message
+endfunction"}}}
+
+function! s:Watch.remove_autocmd(pid) "{{{
+  execute 'autocmd! ' s:get_augroup(a:pid)
+endfunction"}}}
+
+function! s:Watch.check(pid) "{{{
+  let pid = a:pid
+
+  if has_key(s:watch_list, pid)
+    let instance = s:watch_list[pid]
+    let [status, code] =  instance.process.checkpid()
+
+    if status != 'run'
+      call instance.done()
+      call remove(s:watch_list, pid)
+    endif
+  else
+    throw 'Not found process:' . pid
+    call self.remove_autocmd(pid)
+  endif
 endfunction"}}}
