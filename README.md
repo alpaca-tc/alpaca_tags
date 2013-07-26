@@ -16,7 +16,7 @@
 - vimprocを使って、非同期でtagsの生成
 - Ruby/Bundlerに対応して、必要最低限のtagsのみを非同期生成
 
-![Demo 実は少しミスってる](http://gifzo.net/BKv9ukBQ22q.gif)
+![Demo](http://gifzo.net/tIDwHf2ZAp.gif)
 
 ## コマンド
 
