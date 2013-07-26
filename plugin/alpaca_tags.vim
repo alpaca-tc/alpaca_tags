@@ -39,15 +39,22 @@ if !exists('g:alpaca_update_tags_config')
         \ }
 endif
 
+if !exists('g:alpaca_tags_print_to_console') 
+  let g:alpaca_tags_print_to_console = {
+        \ 'system' : 1,
+        \ 'tags_set' : 1,
+        \ }
+endif
+
 let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
 
-command! -nargs=* -complete=customlist,alpaca_tags#complete_source
-      \ Tags call alpaca_tags#update_tags(<q-args>)
-command! -nargs=* -complete=customlist,alpaca_tags#complete_source
-      \ TagsUpdate call alpaca_tags#update_tags(<q-args>)
-command! -nargs=* -complete=customlist,alpaca_tags#complete_source
-      \ TagsBundle call alpaca_tags#update_bundle_tags(<q-args>)
-command! -nargs=0 TagsSet call alpaca_tags#set_tags()
+command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
+      \ Tags call alpaca_tags#create_tags#update(<q-args>)
+command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
+      \ TagsUpdate call alpaca_tags#create_tags#update(<q-args>)
+command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
+      \ TagsBundle call alpaca_tags#create_tags#update_bundle(<q-args>)
+command! -nargs=0 TagsSet call alpaca_tags#set()
 command! -nargs=0 TagsCleanCache call unite#sources#tags#taglist#clean_cache()
 
 let &cpo = s:save_cpo

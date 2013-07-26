@@ -1,26 +1,8 @@
-function! s:current_git() "{{{
-  let current_dir = getcwd()
-  if !exists("s:git_root_cache") | let s:git_root_cache = {} | endif
-  if has_key(s:git_root_cache, current_dir)
-    return s:git_root_cache[current_dir]
-  endif
-
-  let git_root = system('git rev-parse --show-toplevel')
-  if git_root =~ "fatal: Not a git repository"
-    " throw "No a git repository."
-    return ""
-  endif
-
-  let s:git_root_cache[current_dir] = substitute(git_root, '\n', '', 'g')
-
-  return s:git_root_cache[current_dir]
-endfunction"}}}
-
 function! s:get_root_dir() "{{{
   if exists('b:rails_root')
     return b:rails_root
-  elseif !empty(s:current_git())
-    return s:current_git()
+  elseif !empty(alpaca_tags#util#current_git())
+    return alpaca_tags#util#current_git()
   else
     return 0
   endif
