@@ -1,6 +1,6 @@
 function! alpaca_tags#util#current_git() "{{{
   if !exists('s:git_root_cache')
-    let s:git_root_cache = {}
+    call alpaca_tags#util#clean_current_git_cache()
   endif
 
   let current_dir = getcwd()
@@ -16,6 +16,9 @@ function! alpaca_tags#util#current_git() "{{{
 
   return s:git_root_cache[current_dir]
 endfunction"}}}
+function! alpaca_tags#util#clean_current_git_cache()
+  let s:git_root_cache = {}
+endfunction
 
 function! alpaca_tags#util#filetype() "{{{
   if empty(&filetype) | return '' | endif

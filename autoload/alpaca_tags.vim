@@ -1,4 +1,4 @@
-function! alpaca_tags#set() 
+function! alpaca_tags#set() "{{{
   let current_git_root = alpaca_tags#util#current_git()
 
   let tags_list = [
@@ -17,5 +17,9 @@ function! alpaca_tags#set()
   if !empty(tags_setted) && g:alpaca_tags_print_to_console['setted tags']
     echomsg 'Set:' . join(tags_setted, ', ')
   endif
-endfunction
+endfunction"}}}
 
+function! alpaca_tags#clear_cache() "{{{
+  call unite#sources#tags#taglist#clean_cache()
+  call alpaca_tags#util#clean_current_git_cache()
+endfunction"}}}

@@ -47,9 +47,15 @@ if !exists('g:alpaca_tags_print_to_console')
         \ }
 endif
 
-let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
-let g:alpaca_tags_ctags_bin = get(g:, 'alpaca_tags_ctags_bin', 'ctags')
+if !exists('g:alpaca_tags_ctags_bin')
+  if executable('/Applications/MacVim.app/Contents/MacOS/ctags')
+    let g:alpaca_tags_ctags_bin = '/Applications/MacVim.app/Contents/MacOS/ctags'
+  elseif
+    let g:alpaca_tags_ctags_bin = 'ctags'
+  endif
+endif
 
+let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
 command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
       \ Tags call alpaca_tags#create_tags#update(<q-args>)
 command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
@@ -57,7 +63,7 @@ command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
 command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
       \ TagsBundle call alpaca_tags#create_tags#update_bundle(<q-args>)
 command! -nargs=0 TagsSet call alpaca_tags#set()
-command! -nargs=0 TagsCleanCache call unite#sources#tags#taglist#clean_cache()
+command! -nargs=0 TagsCleanCache call alpaca_tags#clear_cache()
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

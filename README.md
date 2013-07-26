@@ -1,5 +1,14 @@
 # alpaca_update_tags
 
+## TODO
+
+`今求められているのは、人柱力`
+
+- [x] Unite-tagsの実装(最終的には、unite-tagに移植されそう。)
+- [x] オプション名を変更
+- [x] Rename. `AlpacaTags...` -> `Tags..`
+- [x] Tagsの生成が完了したら、メッセージを表示
+
 ## 概要
 
 *ctagsの生成を便利にしよう！*
@@ -11,28 +20,44 @@
 
 ## コマンド
 
-*TagsSet*
-setl tagsの自動化
+### TagsSet
 
-*Tags*
+setl tagsの自動化
+`:TagsSet`
+
+### Tags, TagsUpdate(alias)
+
 Git配下のディレクトリを対象にctagsを実行する
 
-*TagsBundle*
+`:Tags -R --languages=-js`
+
+*`g:alpaca_tags_config`で設定している場合は、オプションを省略可能*
+
+`:Tags vim -ruby`
+
+### TagsBundle
+
 Git直下のGemfileを元にtagsを生成する。
+
+`TagsBundle`
 
 ## 設定
 
-*g:alpaca_tags_config*
-自身でオプションを作る
-'_'では、デフォルトする設定を記述する
+```.vimrc:vim
+" *g:alpaca_tags_config*
 
-g.u
+" 自身でオプションを作る
+" '_'では、デフォルトする設定を記述する
 let g:alpaca_tags_config = {
-      \ '_' : '-R --sort=yes',
-      \ 'ruby' : '--languages=Ruby',
+      \ '_' : '-R --sort=yes --languages=+Ruby --languages=-css,scss,html',
+      \ 'js' : '--languages=+js',
+      \ 'ruby': '--languages=+Ruby',
       \ }
 
-`:TagsUpdate ruby`で、`ctags -R --sort=yes --languages=Ruby`が実行される。
+" ctagsのパスを設定
+" '/Applications/MacVim.app/Contents/MacOS/ctags'が存在する場合は自動設定
+let g:alpaca_tags_ctags_bin = '/path/to/ctags'
+```
 
 ## オススメの設定
 
@@ -42,40 +67,23 @@ NeoBundleLazy 'alpaca-tc/alpaca_tags', {
       \ 'rev' : 'development',
       \ 'depends': ['Shougo/vimproc', 'Shougo/unite.vim'],
       \ 'autoload' : {
-      \   'commands' : [{
-      \     'name' : 'Tags',
-      \     'complete' : 'customlist,alpaca_tags#complete_source'},
-      \     'TagsSet', 'TagsBundle'
-      \     ],
+      \   'commands' : ['Tags', 'TagsUpdate', 'TagsSet', 'TagsBundle', 'TagsCleanCache'],
       \   'unite_sources' : ['tags']
       \ }}
 
-" example...
 " ~/.ctagsにctagsの設定ファイルを設置します。現在無い人は、このディレクトリ内の.ctagsをコピーしてください。
 " 適切なlanguageは`ctags --list-maps=all`で見つけてください。人によりますので。
 let g:alpaca_tags_config = {
-      \ '_' : '-R --sort=yes',
-      \ 'js' : '--languages=+js',
-      \ '-js' : '--languages=-js,JavaScript',
-      \ 'vim' : '--languages=+Vim,vim',
-      \ '-vim' : '--languages=-Vim,vim',
-      \ '-style': '--languages=-css,sass,scss,js,JavaScript,html',
-      \ 'scss' : '--languages=+scss --languages=-css,sass',
-      \ 'sass' : '--languages=+sass --languages=-css,scss',
-      \ 'css' : '--languages=+css',
-      \ 'java' : '--languages=+java $JAVA_HOME/src',
+      \ '_' : '-R --sort=yes --languages=-js,html,css',
       \ 'ruby': '--languages=+Ruby',
-      \ 'coffee': '--languages=+coffee',
-      \ '-coffee': '--languages=-coffee',
-      \ 'bundle': '--languages=+Ruby --languages=-css,sass,scss,js,JavaScript,coffee',
       \ }
 
 augroup AlpacaTags
   autocmd!
   if exists(':Tags')
-    autocmd FileWritePost,BufWritePost * Tags -style -rspec -vim
-    autocmd FileWritePost,BufWritePost Gemfile TagsBundle -style
-    autocmd FileReadPost,BufEnter * TagsSet
+    autocmd BufWritePost * TagsUpdate ruby
+    autocmd BufWritePost Gemfile TagsBundle
+    autocmd BufEnter * TagsSet
   endif
 augroup END
 

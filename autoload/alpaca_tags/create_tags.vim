@@ -72,6 +72,7 @@ endfunction"}}}
 
 function! alpaca_tags#create_tags#update(args) "{{{
   let git_root_dir = alpaca_tags#util#current_git()
+  let root_path = fnamemodify(git_root_dir, ':~')
 
   if empty(git_root_dir)
     echomsg 'Updating tags failed'
@@ -82,10 +83,13 @@ function! alpaca_tags#create_tags#update(args) "{{{
   let parse_opt = s:parse_options(a:args)
   let option = s:get_tags_options(parse_opt)
 
-  return alpaca_tags#util#system(command, option, 'Created ' . git_root_dir . '/.git/working_dir.tags')
+  return alpaca_tags#util#system(command, option, 'Created ' . root_path . '/.git/working_dir.tags')
 endfunction"}}}
 
 function! alpaca_tags#create_tags#update_bundle(args) "{{{
+  let git_root_dir = alpaca_tags#util#current_git()
+  let root_path = fnamemodify(git_root_dir, ':~')
+
   let parse_opt = s:parse_options(a:args)
   if empty(parse_opt)
     let parse_opt = ["bundle"]
@@ -93,7 +97,7 @@ function! alpaca_tags#create_tags#update_bundle(args) "{{{
   let option = s:get_tags_options(parse_opt)
   let command = s:get_command("create_bundle_tags_into_git")
 
-  return alpaca_tags#util#system(command, option, 'Created ' . git_root_dir . '/.git/gem.tags')
+  return alpaca_tags#util#system(command, option, 'Created ' . root_path  . '/.git/gem.tags')
 endfunction"}}}
 
 function! alpaca_tags#create_tags#complete_source(arglead, cmdline, cursorpos) "{{{
