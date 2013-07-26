@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-" Define source {{{
+" Define source 
 let s:source = {
       \ 'name': 'tags',
       \ 'hooks': {},
@@ -33,7 +33,7 @@ let s:source = {
       \ 'max_candidates' : 100,
       \ 'is_multiline' : 1,
       \ 'converters': 'converter_relative_word'
-      \}
+      \ }
 
 function! unite#sources#tags#define() "{{{
   return has('ruby') ? s:source : {}
@@ -65,4 +65,4 @@ function! s:source.gather_candidates(args, context) "{{{
   let function_name = 'taglist'
   return unite#sources#tags#{function_name}#gather_candidates(a:args, a:context)
 endfunction"}}}
-"}}}
+
