@@ -42,12 +42,12 @@ function! alpaca_tags#util#system(command, args, message) "{{{
   endif
 endfunction"}}}
 
-" Watching process
+" Watching process"{{{
 let s:Watch = {}
 let s:watch_list = {}
 
 function! s:get_augroup(pid) "{{{
-  return 'TagsWatchProcessPidIs' . a:pid
+  return 'TagsWatchProcessPid' . a:pid
 endfunction"}}}
 
 function! s:Watch.new(process, message) "{{{
@@ -80,7 +80,8 @@ function! s:Watch.done() "{{{
 endfunction"}}}
 
 function! s:Watch.remove_autocmd(pid) "{{{
-  execute 'autocmd! ' s:get_augroup(a:pid)
+  execute 'autocmd!' s:get_augroup(a:pid)
+  execute 'augroup!' s:get_augroup(a:pid)
 endfunction"}}}
 
 function! s:Watch.check(pid) "{{{
@@ -93,9 +94,13 @@ function! s:Watch.check(pid) "{{{
     if status != 'run'
       call instance.done()
       call remove(s:watch_list, pid)
+    " elseif status == 'error'
+    " elseif status == 'exit'
     endif
   else
-    throw 'Not found process:' . pid
+    call remove(s:watch_list, pid)
     call self.remove_autocmd(pid)
+    throw 'Not found process:' . pid
   endif
 endfunction"}}}
+"}}}

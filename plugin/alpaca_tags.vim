@@ -32,7 +32,6 @@ let g:loaded_update_tags = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-" 初期化
 if !exists('g:alpaca_update_tags_config')
   let g:alpaca_update_tags_config = {
         \ '_' : '-R --sort=yes --languages=-js,css',
