@@ -54,6 +54,8 @@ if !exists('g:alpaca_tags_ctags_bin')
   endif
 endif
 
+let g:alpaca_tags_disable = get(g:, 'alpaca_tags_disable', 0)
+
 let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
 command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
       \ Tags call alpaca_tags#create_tags#update(<q-args>)
@@ -63,6 +65,8 @@ command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
       \ TagsBundle call alpaca_tags#create_tags#update_bundle(<q-args>)
 command! -nargs=0 TagsSet call alpaca_tags#set()
 command! -nargs=0 TagsCleanCache call alpaca_tags#clear_cache()
+command! -nargs=0 TagsDisable let g:alpaca_tags_disable = 1
+command! -nargs=0 TagsEnable let g:alpaca_tags_disable = 0
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

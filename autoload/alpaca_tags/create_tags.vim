@@ -71,6 +71,10 @@ endfunction"}}}
 "}}}
 
 function! alpaca_tags#create_tags#update(args) "{{{
+  if g:alpaca_tags_disable
+    return 
+  endif
+
   let git_root_dir = alpaca_tags#util#current_git()
   let root_path = fnamemodify(git_root_dir, ':~')
 

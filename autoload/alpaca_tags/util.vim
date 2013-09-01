@@ -63,18 +63,19 @@ function! s:Watch.constructor(process, message) "{{{
   let s:watch_list[a:process.pid] = self
   let self.process = a:process
   let self.message = a:message
-  let self.augroup_name = s:get_augroup(self.process.pid)
+  let self.pid = self.process.pid
+  let self.augroup_name = s:get_augroup(self.pid)
   execute 'augroup' self.augroup_name
   call self.start()
 endfunction"}}}
 
 function! s:Watch.start() "{{{
   let self.start_time = reltime()
-  execute 'autocmd ' self.augroup_name ' CursorHold * call s:Watch.check('.self.process.pid.')'
+  execute 'autocmd ' self.augroup_name ' CursorHold * call s:Watch.check('.self.pid.')'
 endfunction"}}}
 
 function! s:Watch.done() "{{{
-  call self.remove_autocmd(self.process.pid)
+  call self.remove_autocmd(self.pid)
   call unite#sources#tags#taglist#clean_cache()
   echomsg self.message
 endfunction"}}}
@@ -84,6 +85,7 @@ function! s:Watch.remove_autocmd(pid) "{{{
   execute 'augroup!' s:get_augroup(a:pid)
 endfunction"}}}
 
+let g:watch_list = s:watch_list
 function! s:Watch.check(pid) "{{{
   let pid = a:pid
 
@@ -94,12 +96,13 @@ function! s:Watch.check(pid) "{{{
     if status != 'run'
       call instance.done()
       call remove(s:watch_list, pid)
+      call instance.process.waitpid()
     " elseif status == 'error'
     " elseif status == 'exit'
     endif
   else
-    call remove(s:watch_list, pid)
     call self.remove_autocmd(pid)
+    call remove(s:watch_list, pid)
     throw 'Not found process:' . pid
   endif
 endfunction"}}}

@@ -23,3 +23,4 @@ function! alpaca_tags#clear_cache() "{{{
   call unite#sources#tags#taglist#clean_cache()
   call alpaca_tags#util#clean_current_git_cache()
 endfunction"}}}
+
