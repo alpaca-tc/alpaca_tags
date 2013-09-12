@@ -1,14 +1,5 @@
 # alpaca_update_tags
 
-## TODO
-
-`今求められているのは、人柱力`
-
-- [x] Unite-tagsの実装(最終的には、unite-tagに移植されそう。)
-- [x] オプション名を変更
-- [x] Rename. `AlpacaTags...` -> `Tags..`
-- [x] Tagsの生成が完了したら、メッセージを表示
-
 ## 概要
 
 *ctagsの生成を便利にしよう！*
