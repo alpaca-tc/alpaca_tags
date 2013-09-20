@@ -49,7 +49,7 @@ endif
 if !exists('g:alpaca_tags_ctags_bin')
   if executable('/Applications/MacVim.app/Contents/MacOS/ctags')
     let g:alpaca_tags_ctags_bin = '/Applications/MacVim.app/Contents/MacOS/ctags'
-  elseif
+  else
     let g:alpaca_tags_ctags_bin = 'ctags'
   endif
 endif
