@@ -49,8 +49,11 @@ endif
 if !exists('g:alpaca_tags_ctags_bin')
   if executable('/Applications/MacVim.app/Contents/MacOS/ctags')
     let g:alpaca_tags_ctags_bin = '/Applications/MacVim.app/Contents/MacOS/ctags'
-  elseif
+  elseif executable('ctags')
     let g:alpaca_tags_ctags_bin = 'ctags'
+  else
+    echomsg "[alpaca_tags] Error occurred: Please install ctags"
+    finish
   endif
 endif
 
