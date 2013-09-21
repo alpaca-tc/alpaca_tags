@@ -1,5 +1,10 @@
 # alpaca_update_tags
 
+## Version0.2 TODO
+
+- tagsの設定リストを使ったTagsコマンドと、自身でカスタマイズするTagsコマンドを分離
+- docの追加
+
 ## 概要
 
 *ctagsの生成を便利にしよう！*
