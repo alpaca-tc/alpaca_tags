@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: tags.vim
+" FILE: tags_history.vim
 " AUTHOR: Ishii Hiroyuki <alprhcp666@gmail.com>
 " Last Modified: 2013-07-21
 " License: MIT license  {{{
@@ -26,7 +26,7 @@
 
 " Define source 
 let s:source = {
-      \ 'name': 'tags',
+      \ 'name': 'tags/history',
       \ 'hooks': {},
       \ 'is_volatile': 1,
       \ 'syntax': 'uniteSource__Tag',
@@ -36,7 +36,7 @@ let s:source = {
       \ 'converters': 'converter_relative_word'
       \ }
 
-function! unite#sources#tags#define() "{{{
+function! unite#sources#tags_history#define() "{{{
   return has('ruby') ? s:source : {}
 endfunction"}}}
 
@@ -63,7 +63,5 @@ function! s:source.hooks.on_init(args, context) "{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  let function_name = 'taglist'
-  return unite#sources#tags#{function_name}#gather_candidates(a:args, a:context)
+  return alpaca_tags#tags_history#get_history()
 endfunction"}}}
-

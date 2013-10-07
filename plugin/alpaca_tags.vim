@@ -71,5 +71,9 @@ command! -nargs=0 TagsCleanCache call alpaca_tags#clear_cache()
 command! -nargs=0 TagsDisable let g:alpaca_tags_disable = 1
 command! -nargs=0 TagsEnable let g:alpaca_tags_disable = 0
 
+command! -nargs=0 Tprevious call alpaca_tags#tags_history#previous()
+command! -nargs=0 Tnext call alpaca_tags#tags_history#next()
+command! -nargs=0 Tcurrent call alpaca_tags#tags_history#current()
+
 let &cpo = s:save_cpo
 unlet s:save_cpo

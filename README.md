@@ -1,5 +1,9 @@
 # alpaca_update_tags
 
+## Version0.2 TODO
+
+- tnext, tprevious, tfirst, tlast, tjump, tselect
+
 ## 概要
 
 *ctagsの生成を便利にしよう！*

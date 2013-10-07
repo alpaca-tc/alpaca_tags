@@ -18,7 +18,8 @@ function! unite#sources#tags#taglist#vim#tag2candidate(tag, filename_length)
   let candidate = {
         \ 'word': substitute(abbr, '\n', ' ', 'g'),
         \ 'abbr': abbr,
-        \ 'kind': 'jump_list',
+        \ 'kind': ['tags', 'jump_list'],
+        \ 'default_action': 'open_tag',
         \ 'action__path': fnamemodify(tag['filename'], '%:p'),
         \ 'action__directory': fnamemodify(tag['filename'], '%:h'),
         \ 'action__tagname': tag['name'],
