@@ -26,7 +26,7 @@ Git配下のディレクトリを対象にctagsを実行する
 
 `:Tags -R --languages=-js`
 
-*`g:alpaca_tags_config`で設定している場合は、オプションを省略可能*
+*`g:alpaca_update_tags_config`で設定している場合は、オプションを省略可能*
 
 `:Tags vim -ruby`
 
@@ -39,11 +39,11 @@ Git直下のGemfileを元にtagsを生成する。
 ## 設定
 
 ```.vimrc:vim
-" *g:alpaca_tags_config*
+" *g:alpaca_update_tags_config*
 
 " 自身でオプションを作る
 " '_'では、デフォルトする設定を記述する
-let g:alpaca_tags_config = {
+let g:alpaca_update_tags_config = {
       \ '_' : '-R --sort=yes --languages=+Ruby --languages=-css,scss,html',
       \ 'js' : '--languages=+js',
       \ 'ruby': '--languages=+Ruby',
@@ -68,7 +68,7 @@ NeoBundleLazy 'alpaca-tc/alpaca_tags', {
 
 " ~/.ctagsにctagsの設定ファイルを設置します。現在無い人は、このディレクトリ内の.ctagsをコピーしてください。
 " 適切なlanguageは`ctags --list-maps=all`で見つけてください。人によりますので。
-let g:alpaca_tags_config = {
+let g:alpaca_update_tags_config = {
       \ '_' : '-R --sort=yes --languages=-js,html,css',
       \ 'ruby': '--languages=+Ruby',
       \ }

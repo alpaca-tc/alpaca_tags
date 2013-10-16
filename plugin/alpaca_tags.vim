@@ -42,7 +42,7 @@ if !exists('g:alpaca_update_tags_config')
         \ }
 endif
 
-if !exists('g:alpaca_tags_print_to_console') 
+if !exists('g:alpaca_tags_print_to_console')
   let g:alpaca_tags_print_to_console = {
         \ 'debug' : 0,
         \ 'setted tags' : 0,
