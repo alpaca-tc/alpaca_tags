@@ -62,6 +62,7 @@ if !exists('g:alpaca_tags_ctags_bin')
 endif
 
 let g:alpaca_tags_disable = get(g:, 'alpaca_tags_disable', 0)
+let g:alpaca_tags_config = get(g:, 'alpaca_tags_config', {})
 
 let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
 command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
