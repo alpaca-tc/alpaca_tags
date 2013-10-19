@@ -32,36 +32,7 @@ let g:loaded_update_tags = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-if exists('g:alpaca_tags_config')
-  echomsg 'g:alpaca_tags_config is deprecated. Please use g:alpaca_update_tags_config'
-endif
-
-if !exists('g:alpaca_update_tags_config')
-  let g:alpaca_update_tags_config = {
-        \ '_' : '-R --sort=yes --languages=-js,css',
-        \ }
-endif
-
-if !exists('g:alpaca_tags_print_to_console')
-  let g:alpaca_tags_print_to_console = {
-        \ 'debug' : 0,
-        \ 'setted tags' : 0,
-        \ 'created/updated tags' : 1,
-        \ }
-endif
-
-if !exists('g:alpaca_tags_ctags_bin')
-  if executable('/Applications/MacVim.app/Contents/MacOS/ctags')
-    let g:alpaca_tags_ctags_bin = '/Applications/MacVim.app/Contents/MacOS/ctags'
-  elseif executable('ctags')
-    let g:alpaca_tags_ctags_bin = 'ctags'
-  else
-    echomsg "[alpaca_tags] Error occurred: Please install ctags"
-    finish
-  endif
-endif
-
-let g:alpaca_tags_disable = get(g:, 'alpaca_tags_disable', 0)
+call alpaca_tags#variables#init()
 
 let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
 command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
