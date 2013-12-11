@@ -1,24 +1,9 @@
+let s:V = vital#of('alpaca_tags')
+
 function! alpaca_tags#util#current_git() "{{{
-  if !exists('s:git_root_cache')
-    call alpaca_tags#util#clean_current_git_cache()
-  endif
-
   let current_dir = getcwd()
-  if !has_key(s:git_root_cache, current_dir)
-    let git_root = system("git rev-parse --show-toplevel")
-    if git_root =~ "fatal: Not a git repository"
-      " throw "No a git repository."
-      return 0
-    endif
-
-    let s:git_root_cache[current_dir] = substitute(git_root, '\n', '', 'g')
-  endif
-
-  return s:git_root_cache[current_dir]
+  return s:V.path2project_directory(current_dir)
 endfunction"}}}
-function! alpaca_tags#util#clean_current_git_cache()
-  let s:git_root_cache = {}
-endfunction
 
 function! alpaca_tags#util#filetype() "{{{
   if empty(&filetype) | return '' | endif
@@ -76,7 +61,6 @@ endfunction"}}}
 
 function! s:Watch.done() "{{{
   call self.remove_autocmd(self.pid)
-  call unite#sources#tags#taglist#clean_cache()
   echomsg self.message
 endfunction"}}}
 
