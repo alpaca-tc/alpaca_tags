@@ -4,8 +4,10 @@ function! alpaca_tags#variables#init()
   endif
   let s:loaded_init = 1
 
-  let g:alpaca_tags_cache_directory =
-        \ get(g:, 'alpaca_tags_cache_directory', g:unite_data_directory . '/alpaca_tags')
+  let data_directory = substitute(substitute(fnamemodify(get(
+      \   g:, 'unite_data_directory', '~/.unite'),
+      \  ':p'), '\\', '/', 'g'), '/$', '', '')
+  let g:alpaca_tags_cache_directory = data_directory . '/alpaca_tags'
   call alpaca_tags#variables#check_deprecated_variables()
 endfunction
 
