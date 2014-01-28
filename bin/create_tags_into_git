@@ -14,6 +14,6 @@ done
 
 git_root_dir=`git rev-parse --show-toplevel`
 if [ -d "${git_root_dir}" ]; then
-  echo "${ctags_path} ${ctags_args} -f ${git_root_dir}/.git/working_dir.tags ${git_root_dir}"
-  ${ctags_path} ${ctags_args} -f ${git_root_dir}/.git/working_dir.tags ${git_root_dir}
+  echo "${ctags_path} -f ${git_root_dir}/.git/working_dir.tags ${ctags_args} ${git_root_dir}"
+  ${ctags_path} -f ${git_root_dir}/.git/working_dir.tags ${ctags_args} ${git_root_dir}
 fi
