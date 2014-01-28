@@ -16,5 +16,5 @@ done
 
 if [ -d "${git_root_dir}" ]; then
   cd ${git_root_dir}
-  bundle show --paths | xargs ${ctags_path} ${ctags_args} -R -f ${git_root_dir}/.git/gem.tags
+  bundle show --paths | xargs ${ctags_path} -f ${git_root_dir}/.git/gem.tags ${ctags_args} -R
 fi
