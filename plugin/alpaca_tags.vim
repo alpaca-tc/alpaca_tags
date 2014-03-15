@@ -42,7 +42,7 @@ if !exists('g:alpaca_update_tags_config')
         \ }
 endif
 
-if !exists('g:alpaca_tags_print_to_console') 
+if !exists('g:alpaca_tags_print_to_console')
   let g:alpaca_tags_print_to_console = {
         \ 'debug' : 0,
         \ 'setted tags' : 0,
@@ -59,6 +59,12 @@ if !exists('g:alpaca_tags_ctags_bin')
     echomsg "[alpaca_tags] Error occurred: Please install ctags"
     finish
   endif
+endif
+
+let g:alpaca_tags_cache_dir = get(g:, 'alpaca_tags_cache_dir', expand('~') . '/.alpaca_tags')
+
+if !isdirectory(g:alpaca_tags_cache_dir)
+  call mkdir(g:alpaca_tags_cache_dir, 'p')
 endif
 
 let g:alpaca_tags_disable = get(g:, 'alpaca_tags_disable', 0)

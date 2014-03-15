@@ -1,109 +1,150 @@
-function! alpaca_tags#util#current_git() "{{{
-  if !exists('s:git_root_cache')
-    call alpaca_tags#util#clean_current_git_cache()
+let s:PM = vital#of('alpaca_tags').import('ProcessManager')
+
+function! alpaca_tags#util#filetype()
+  if empty(&filetype)
+    return ''
   endif
 
-  let current_dir = getcwd()
-  if !has_key(s:git_root_cache, current_dir)
-    let git_root = system("git rev-parse --show-toplevel")
-    if git_root =~ "fatal: Not a git repository"
-      " throw "No a git repository."
-      return 0
-    endif
-
-    let s:git_root_cache[current_dir] = substitute(git_root, '\n', '', 'g')
-  endif
-
-  return s:git_root_cache[current_dir]
-endfunction"}}}
-function! alpaca_tags#util#clean_current_git_cache()
-  let s:git_root_cache = {}
+  return split(&filetype, '\.')[0]
 endfunction
 
-function! alpaca_tags#util#filetype() "{{{
-  if empty(&filetype) | return '' | endif
+function! alpaca_tags#util#system(command, path, callbacks)
+  let current_dir = getcwd()
 
-  return split( &filetype, '\.' )[0]
-endfunction"}}}
+  try
+    lcd `=a:path`
+    if g:alpaca_tags_print_to_console['created/updated tags']
+      return s:Watch.new(a:command, a:callbacks)
+    else
+      return vimproc#plineopen3(a:command)
+    endif
+  " catch /.*/
+  finally
+    lcd `=current_dir`
+  endtry
+endfunction
 
-function! alpaca_tags#util#system(command, args, message) "{{{
-  let ctags_path = '--ctags_path '.g:alpaca_tags_ctags_bin
-  let args = '--ctags_args "'.a:args.'"'
-  let command = join([a:command, args, ctags_path], ' ')
+let s:Watch = {
+      \ 'instances' : {},
+      \ 'stdout_all' : '',
+      \ 'stderr_all' : '',
+      \ }
 
-  if g:alpaca_tags_print_to_console['debug']
-    echomsg printf('Execute command: %s', command)
-  endif
-
-  if g:alpaca_tags_print_to_console['created/updated tags']
-    return s:Watch.new(vimproc#popen2(command), a:message)
-  else
-    return vimproc#system_bg(command)
-  endif
-endfunction"}}}
-
-" Watching process"{{{
-let s:Watch = {}
-let s:watch_list = {}
-
-function! s:get_augroup(pid) "{{{
-  return 'TagsWatchProcessPid' . a:pid
-endfunction"}}}
-
-function! s:Watch.new(process, message) "{{{
-  let instance = deepcopy(self)
-  call instance.constructor(a:process, a:message)
-  call remove(instance, 'new')
-  call remove(instance, 'constructor')
+function! s:Watch.new(command, callbacks)
+  let instance = copy(self)
+  call instance.constructor(a:command, a:callbacks)
+  let s:Watch.instances[instance.pid] = instance
 
   return instance
+endfunction
+
+function! s:Watch.constructor(command, callbacks) "{{{
+  let self.pid = join(reltime(), '') " Dummy
+  call s:PM.touch(self.pid, a:command)
+  let self.command    = a:command
+  let self.callbacks  = a:callbacks
 endfunction"}}}
 
-function! s:Watch.constructor(process, message) "{{{
-  let s:watch_list[a:process.pid] = self
-  let self.process = a:process
-  let self.message = a:message
-  let self.pid = self.process.pid
-  let self.augroup_name = s:get_augroup(self.pid)
-  execute 'augroup' self.augroup_name
-  call self.start()
-endfunction"}}}
+function! s:Watch.read() "{{{
+  try
+    call s:PM.status(self.pid)
+  catch "^ProcessManager doesn't know about.*"
+    return [
+          \ get(self, 'stdout_all', ''),
+          \ get(self, 'stderr_all', ''),
+          \ get(self, 'status', 'not_exists')]
+  endtry
 
-function! s:Watch.start() "{{{
-  let self.start_time = reltime()
-  execute 'autocmd ' self.augroup_name ' CursorHold * call s:Watch.check('.self.pid.')'
+  let [self.stdout, self.stderr, self.status] = s:PM.read(self.pid, [''])
+  let self.stdout_all .= self.stdout
+  let self.stderr_all .= self.stderr
+
+  return [self.stdout_all, self.stderr_all, self.status]
 endfunction"}}}
 
 function! s:Watch.done() "{{{
-  call self.remove_autocmd(self.pid)
-  call unite#sources#tags#taglist#clean_cache()
-  echomsg self.message
+  echomsg 'Done!!! ' . self.command
+  echomsg join(self.read_all(), ', ')
+
+  call remove(s:Watch.instances, self.pid)
+  call self.do_callback('done')
+  call s:PM.kill(self.pid)
 endfunction"}}}
 
-function! s:Watch.remove_autocmd(pid) "{{{
-  execute 'autocmd!' s:get_augroup(a:pid)
-  execute 'augroup!' s:get_augroup(a:pid)
+function! s:Watch.in_process() "{{{
+  call self.do_callback('in_process')
 endfunction"}}}
 
-let g:watch_list = s:watch_list
-function! s:Watch.check(pid) "{{{
-  let pid = a:pid
+function! s:Watch.destroy() "{{{
+  call tags#message#print('Timeout: ' . self.command)
+  call remove(s:Watch.instances, self.pid)
+  call s:PM.kill(self.pid)
+endfunction"}}}
 
-  if has_key(s:watch_list, pid)
-    let instance = s:watch_list[pid]
-    let [status, code] =  instance.process.checkpid()
+function! s:Watch.read_all() "{{{
+  call self.read()
+  return [get(self, 'stdout_all', ''), get(self, 'stderr_all', ''), get(self, 'status', 'not_found')]
+endfunction"}}}
 
-    if status != 'run'
-      call instance.done()
-      call remove(s:watch_list, pid)
-      call instance.process.waitpid()
-    " elseif status == 'error'
-    " elseif status == 'exit'
+function! s:Watch.do_callback(action) "{{{
+  let callbacks = get(self, 'callbacks', {})
+  if type(callbacks) == type({}) && has_key(callbacks, a:action)
+    let callback = callbacks[a:action]
+    if exists('*' . callback)
+      call {callbacks[a:action]}(self.read_all(), self)
+    elseif callback == type('')
+      echo callback
     endif
+    return 1
   else
-    call self.remove_autocmd(pid)
-    call remove(s:watch_list, pid)
-    throw 'Not found process:' . pid
+    return 0
   endif
 endfunction"}}}
-"}}}
+
+" Watching process for sync
+function! s:check_status() "{{{
+  if empty(s:Watch.instances)
+    return 0
+  endif
+
+  for pid in keys(s:Watch.instances)
+    let instance = s:Watch.instances[pid]
+    let status = s:PM.status(pid)
+
+    if status == 'active'
+      call instance.in_process()
+    elseif status == 'inactive'
+      call instance.done()
+    elseif status == 'timeout'
+      call instance.destroy()
+    endif
+  endfor
+endfunction"}}}
+
+function! alpaca_tags#util#check_status()
+  call s:check_status()
+endfunction
+
+function! s:start_watching() "{{{
+  if exists('s:loaded_start_watching')
+    return
+  endif
+  let s:loaded_start_watching = 1
+
+  augroup AlpacaTagsWatching
+    autocmd!
+    autocmd CursorHold,CursorHoldI * call s:check_status()
+    autocmd VimLeavePre * call alpaca_tags#util#killall()
+  augroup END
+endfunction"}}}
+call s:start_watching()
+
+function! alpaca_tags#util#killall() "{{{
+  let pids = keys(s:Watch.instances)
+  let s:Watch.instances = {}
+  for pid in pids
+    call s:PM.kill(pid)
+  endfor
+
+  echo '[alpaca_tags] Kill process: ' . join(pids, ', ')
+endfunction"}}}
