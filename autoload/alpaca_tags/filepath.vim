@@ -7,6 +7,7 @@ let s:is_mac = !s:is_windows && !s:is_cygwin
       \ && (has('mac') || has('macunix') || has('gui_macvim') ||
       \   (!isdirectory('/proc') && executable('sw_vers')))
 let s:is_unix = has('unix')
+let s:root_directory_caching = {}
 
 let s:project_files = [
       \ 'build.xml', 'prj.el', '.project', 'pom.xml', 'package.json',
@@ -80,8 +81,7 @@ function! s:_path2project_directory_others(vcs, path)
   return fnamemodify(d, ':p:h:h')
 endfunction
 
-function! alpaca_tags#filepath#path2project_root(path, ...)
-  let is_allow_empty = get(a:000, 0, 0)
+function! s:path2project_root(path, is_allow_empty)
   let search_directory = s:path2directory(a:path)
   let directory = ''
 
@@ -118,12 +118,23 @@ function! alpaca_tags#filepath#path2project_root(path, ...)
     endif
   endif
 
-  if directory == '' && !is_allow_empty
+  if directory == '' && !a:is_allow_empty
     " Use original path.
     let directory = search_directory
   endif
 
   return s:substitute_path_separator(directory)
+endfunction
+
+function! alpaca_tags#filepath#path2project_root(path, ...)
+  if has_key(s:root_directory_caching, a:path)
+    return s:root_directory_caching[a:path]
+  endif
+
+  let is_allow_empty = get(a:000, 0, 0)
+  let s:root_directory_caching[a:path] = s:path2project_root(a:path, is_allow_empty)
+
+  return s:root_directory_caching[a:path]
 endfunction
 
 let &cpo = s:save_cpo

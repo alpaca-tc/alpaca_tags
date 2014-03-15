@@ -22,7 +22,11 @@ function! s:TagBuilder.available()
 endfunction
 
 function! s:TagBuilder.rootpath()
-  return alpaca_tags#filepath#path2project_root(self.path)
+  if empty(self.path)
+    return ''
+  else
+    return alpaca_tags#filepath#path2project_root(self.path)
+  endif
 endfunction
 
 function! s:TagBuilder.build()
@@ -50,6 +54,7 @@ endfunction
 
 function! s:available_builders(...)
   let path = expand('%:p')
+
   let builders = []
 
   for [name, Builder] in items(s:tag_builders)

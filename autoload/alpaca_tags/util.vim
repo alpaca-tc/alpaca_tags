@@ -23,6 +23,11 @@ function! alpaca_tags#util#filetype() "{{{
 endfunction"}}}
 
 function! alpaca_tags#util#system(command, path, callbacks) "{{{
+  if !isdirectory(a:path)
+    echomsg "Couldn't find base directory! - " . a:path
+    return
+  endif
+
   let current_dir = getcwd()
 
   try
