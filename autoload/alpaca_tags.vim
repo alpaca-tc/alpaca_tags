@@ -6,7 +6,7 @@ endfunction
 
 function! alpaca_tags#create_tags#complete_source(arglead, cmdline, cursorpos) "{{{
   if !exists('s:options_cache')
-    let options = copy(g:alpaca_tags_config)
+    let options = copy(g:alpaca_tags#config)
     if has_key(options, '_')
       call remove(options, '_')
     endif

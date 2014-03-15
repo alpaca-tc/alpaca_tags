@@ -1,5 +1,19 @@
 let s:PM = vital#of('alpaca_tags').import('ProcessManager')
 
+function! alpaca_tags#util#flatten(array)
+  let new_array = []
+
+  for i in a:array
+    if type(i) == type([])
+      let new_array += alpaca_tags#util#flatten(i)
+    else
+      call add(new_array, i)
+    endif
+  endfor
+
+  return new_array
+endfunction
+
 function! alpaca_tags#util#filetype() "{{{
   if empty(&filetype)
     return ''
@@ -13,7 +27,7 @@ function! alpaca_tags#util#system(command, path, callbacks) "{{{
 
   try
     lcd `=a:path`
-    if g:alpaca_tags_print_to_console['created/updated tags']
+    if g:alpaca_tags#console.report
       return s:Watch.new(a:command, a:callbacks)
     else
       return vimproc#plineopen3(a:command)

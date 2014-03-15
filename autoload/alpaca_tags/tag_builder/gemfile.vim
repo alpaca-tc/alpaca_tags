@@ -12,7 +12,7 @@ function! s:Builder.build()
   " bundle show --paths | xargs ctags ... -R -f cache_dir/...Gemfile
   let commands = [
         \ 'bundle show --paths | xargs',
-        \ g:alpaca_tags_ctags_bin,
+        \ g:alpaca_tags#ctags_bin,
         \ self.build_option(),
         \ '-R -f',
         \ self.tagname(),

@@ -2,9 +2,10 @@ function! alpaca_tags#tag_builder#default#define()
 endfunction
 
 let s:Builder = alpaca_tags#tag_builder#new('Default')
+call alpaca_tags#tag_builder#register(s:Builder)
 
 function! s:Builder.build()
-  let ctags = g:alpaca_tags_ctags_bin
+  let ctags = g:alpaca_tags#ctags_bin
   let commands = [
         \ ctags,
         \ self.build_option(),
@@ -14,7 +15,7 @@ function! s:Builder.build()
         \ ]
   let command = join(commands, ' ')
 
-  call alpaca_tags#util#system(command, self.rootpath(), s:Builder.messages())
+  call alpaca_tags#util#system(command, self.rootpath(), self.messages())
 endfunction
 
 function! s:Builder.messages()
