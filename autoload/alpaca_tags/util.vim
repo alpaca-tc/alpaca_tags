@@ -1,14 +1,14 @@
 let s:PM = vital#of('alpaca_tags').import('ProcessManager')
 
-function! alpaca_tags#util#filetype()
+function! alpaca_tags#util#filetype() "{{{
   if empty(&filetype)
     return ''
   endif
 
   return split(&filetype, '\.')[0]
-endfunction
+endfunction"}}}
 
-function! alpaca_tags#util#system(command, path, callbacks)
+function! alpaca_tags#util#system(command, path, callbacks) "{{{
   let current_dir = getcwd()
 
   try
@@ -22,21 +22,22 @@ function! alpaca_tags#util#system(command, path, callbacks)
   finally
     lcd `=current_dir`
   endtry
-endfunction
+endfunction"}}}
 
+" Watch"{{{
 let s:Watch = {
       \ 'instances' : {},
       \ 'stdout_all' : '',
       \ 'stderr_all' : '',
       \ }
 
-function! s:Watch.new(command, callbacks)
+function! s:Watch.new(command, callbacks) "{{{
   let instance = copy(self)
   call instance.constructor(a:command, a:callbacks)
   let s:Watch.instances[instance.pid] = instance
 
   return instance
-endfunction
+endfunction"}}}
 
 function! s:Watch.constructor(command, callbacks) "{{{
   let self.pid = join(reltime(), '') " Dummy
@@ -92,7 +93,7 @@ function! s:Watch.do_callback(action) "{{{
     let callback = callbacks[a:action]
     if exists('*' . callback)
       call {callbacks[a:action]}(self.read_all(), self)
-    elseif callback == type('')
+    elseif type(callback) == type('')
       echo callback
     endif
     return 1
@@ -100,6 +101,7 @@ function! s:Watch.do_callback(action) "{{{
     return 0
   endif
 endfunction"}}}
+"}}}
 
 " Watching process for sync
 function! s:check_status() "{{{
@@ -121,9 +123,9 @@ function! s:check_status() "{{{
   endfor
 endfunction"}}}
 
-function! alpaca_tags#util#check_status()
+function! alpaca_tags#util#check_status() "{{{
   call s:check_status()
-endfunction
+endfunction"}}}
 
 function! s:start_watching() "{{{
   if exists('s:loaded_start_watching')

@@ -2,11 +2,12 @@ let s:TagBuilder = {}
 let s:tag_builders = {}
 
 " s:TagBuilder"{{{
-function! s:TagBuilder.new(path)
+function! s:TagBuilder.new(path, ...)
   let instance = copy(self)
   call remove(instance, 'new')
 
   let instance.path = a:path
+  let instance.option = alpaca_tags#option#new(a:000)
 
   return instance
 endfunction
@@ -30,6 +31,10 @@ function! s:TagBuilder.exists()
   return filereadable(self.tagname())
 endfunction
 
+function! s:TagBuilder.build_option()
+  return self.option.build()
+endfunction
+
 function! alpaca_tags#tag_builder#new(name)
   let Builder = copy(s:TagBuilder)
   let Builder.name = a:name
@@ -42,9 +47,16 @@ function! alpaca_tags#tag_builder#register(tag_builder)
   let s:tag_builders[a:tag_builder.name] = a:tag_builder
 endfunction
 
-function! s:avaliable_tag_builders()
+function! s:avaliable_tag_builders(names)
   let builders = []
   let path = expand('%:p')
+  if empty(path)
+    let path = getcwd()
+  endif
+
+  if empty(path)
+    return
+  endif
 
   for [name, Builder] in items(s:tag_builders)
     let builder = Builder.new(path)
@@ -54,19 +66,28 @@ function! s:avaliable_tag_builders()
     endif
   endfor
 
+  if len(a:names) > 0
+    for builder in copy(builders)
+      if !empty(filter(copy(a:000), 'builder.name == v:val'))
+        call remove(builders, builder)
+      endif
+    endfor
+  endif
+
   return builders
 endfunction
 
-function! alpaca_tags#tag_builder#build()
-  call map(s:avaliable_tag_builders(), 'v:val.build()')
+function! alpaca_tags#tag_builder#build(...)
+  call map(s:avaliable_tag_builders(a:000), 'v:val.build()')
 endfunction
 
-function! alpaca_tags#tag_builder#set()
-  for builder in s:avaliable_tag_builders()
-    if builder.exists()
+function! alpaca_tags#tag_builder#set(...)
+  for builder in s:avaliable_tag_builders(a:000)
+    if builder.exists() " tagfile is exists?
       execute 'setl tags+=' . builder.tagname()
     endif
   endfor
 endfunction
 
 call alpaca_tags#tag_builder#gemfile#define()
+call alpaca_tags#tag_builder#default#define()

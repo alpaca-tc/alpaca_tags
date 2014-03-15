@@ -9,22 +9,23 @@ function! s:Builder.available()
 endfunction
 
 function! s:Builder.build()
-  let args = ''
+  " bundle show --paths | xargs ctags ... -R -f cache_dir/...Gemfile
   let commands = [
         \ 'bundle show --paths | xargs',
         \ g:alpaca_tags_ctags_bin,
-        \ args,
+        \ self.build_option(),
         \ '-R -f',
         \ self.tagname(),
         \ ]
   let command = join(commands, ' ')
 
-  call alpaca_tags#util#system(command, self.rootpath(), s:Builder.messages())
+  call alpaca_tags#util#system(command, self.rootpath(), self.messages())
 endfunction
 
 function! s:Builder.messages()
+  let gempath = self.rootpath() . '/Gemfile'
   return {
-        \ 'done': 'Create tag: Gemfile',
-        \ 'in_process': 'Creating tag: Gemfile...',
+        \ 'done': 'Done! Create tag: ' . gempath,
+        \ 'in_process': 'Creating tag: ' . gempath . '...',
         \ }
 endfunction
