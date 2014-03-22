@@ -1,6 +1,6 @@
 let s:PM = vital#of('alpaca_tags').import('ProcessManager')
 
-function! alpaca_tags#util#flatten(array)
+function! alpaca_tags#util#flatten(array) "{{{
   let new_array = []
 
   for i in a:array
@@ -12,7 +12,7 @@ function! alpaca_tags#util#flatten(array)
   endfor
 
   return new_array
-endfunction
+endfunction"}}}
 
 function! alpaca_tags#util#filetype() "{{{
   if empty(&filetype)
@@ -30,6 +30,10 @@ function! alpaca_tags#util#system(command, path, callbacks) "{{{
 
   let current_dir = getcwd()
 
+  if s:skip_if_single_task_enable()
+    return
+  endif
+
   try
     lcd `=a:path`
     if g:alpaca_tags#console.report
@@ -41,6 +45,14 @@ function! alpaca_tags#util#system(command, path, callbacks) "{{{
   finally
     lcd `=current_dir`
   endtry
+endfunction"}}}
+
+function! s:skip_if_single_task_enable() "{{{
+  if g:alpaca_tags#single_task && len(s:Watch.instances) > 0
+    return 1
+  endif
+
+  return 0
 endfunction"}}}
 
 " Watch"{{{
@@ -87,6 +99,7 @@ function! s:Watch.done() "{{{
   echomsg join(self.read_all(), ', ')
 
   call remove(s:Watch.instances, self.pid)
+  let g:huga = s:Watch.instances
   call self.do_callback('done')
   call s:PM.kill(self.pid)
 endfunction"}}}
@@ -128,18 +141,22 @@ function! s:check_status() "{{{
     return 0
   endif
 
+  let in_processes = []
   for pid in keys(s:Watch.instances)
     let instance = s:Watch.instances[pid]
     let status = s:PM.status(pid)
 
     if status == 'active'
       call instance.in_process()
+      call add(in_processes, instance)
     elseif status == 'inactive'
       call instance.done()
     elseif status == 'timeout'
       call instance.destroy()
     endif
   endfor
+
+  echomsg len(in_processes)
 endfunction"}}}
 
 function! alpaca_tags#util#check_status() "{{{

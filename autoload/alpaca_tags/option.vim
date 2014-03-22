@@ -4,12 +4,11 @@ function! alpaca_tags#option#new(options)
   return s:Option.new(a:options)
 endfunction
 
-let s:Option = {
-      \ 'options': []
-      \ }
+let s:Option = {}
 function! s:Option.new(options)
   let instance = copy(s:Option)
   call remove(instance, 'new')
+  let instance.options = []
 
   " Set default option to g:alpaca_tags#config._
   let options = alpaca_tags#util#flatten(a:options)
