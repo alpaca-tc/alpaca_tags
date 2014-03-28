@@ -183,6 +183,4 @@ function! alpaca_tags#util#killall() "{{{
   for pid in pids
     call s:PM.kill(pid)
   endfor
-
-  echo '[alpaca_tags] Kill process: ' . join(pids, ', ')
 endfunction"}}}
