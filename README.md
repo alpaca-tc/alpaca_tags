@@ -1,8 +1,10 @@
 # alpaca_update_tags
 
-## Version0.2 TODO
+## Version2.0
 
-- tnext, tprevious, tfirst, tlast, tjump, tselect
+AlpacaTagsが再実装されました
+
+[alpaca_tags v2.0](https://github.com/alpaca-tc/alpaca_tags/tree/v2.0)
 
 ## 概要
 
