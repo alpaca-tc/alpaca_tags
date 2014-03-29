@@ -34,7 +34,7 @@ set cpo&vim
 
 if !exists('g:alpaca_tags#config')
   let g:alpaca_update_tags#config = {
-        \ '_' : '-R --sort=yes --languages=-js,css',
+        \ '_' : '-R --sort=yes',
         \ }
 endif
 
@@ -45,20 +45,19 @@ if !exists('g:alpaca_tags#console')
 endif
 
 if !exists('g:alpaca_tags#ctags_bin')
-  let macvim_ctags = '/Applications/MacVim.app/Contents/MacOS/ctags'
-  if executable(macvim_ctags)
-    let g:alpaca_tags#ctags_bin = macvim_ctags
+  let s:macvim_ctags = '/Applications/MacVim.app/Contents/MacOS/ctags'
+  if executable(s:macvim_ctags)
+    let g:alpaca_tags#ctags_bin = s:macvim_ctags
   elseif executable('ctags')
     let g:alpaca_tags#ctags_bin = 'ctags'
   else
-    echomsg "[alpaca_tags] Error occurred: Please install ctags"
+    echomsg '[alpaca_tags] Error occurred: Please install ctags'
     finish
   endif
 endif
 
 let g:alpaca_tags#cache_dir =
       \ get(g:, 'alpaca_tags#cache_dir', expand('~') . '/.alpaca_tags')
-
 let g:alpaca_tags#disable = get(g:, 'alpaca_tags#disable', 0)
 let g:alpaca_tags#single_task = get(g:, 'alpaca_tags#single_task', 1)
 
