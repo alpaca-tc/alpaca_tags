@@ -10,12 +10,12 @@ function! s:Builder.build()
         \ ctags,
         \ self.build_option(),
         \ '-f',
-        \ self.tagname(),
+        \ self.tempname(),
         \ self.rootpath()
         \ ]
   let command = join(commands, ' ')
 
-  call alpaca_tags#util#system(command, self.rootpath(), self.messages())
+  call alpaca_tags#util#system(command, self.rootpath(), self.messages(), self)
 endfunction
 
 function! s:Builder.messages()

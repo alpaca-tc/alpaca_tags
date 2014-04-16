@@ -28,7 +28,7 @@ function! s:skip_if_single_task_enable() "{{{
   return 0
 endfunction"}}}
 
-function! alpaca_tags#util#system(command, path, callbacks) "{{{
+function! alpaca_tags#util#system(command, path, callbacks, tagbuilder) "{{{
   let current_dir = getcwd()
 
   if empty(a:path) || s:skip_if_single_task_enable()
@@ -38,7 +38,7 @@ function! alpaca_tags#util#system(command, path, callbacks) "{{{
 
   try
     lcd `=a:path`
-    let process = alpaca_tags#process#new(a:command, a:callbacks)
+    let process = alpaca_tags#process#new(a:command, a:callbacks, a:tagbuilder)
 
     call alpaca_tags#process_manager#set(a:path, process)
   " catch /.*/

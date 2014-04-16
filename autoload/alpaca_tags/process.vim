@@ -9,22 +9,23 @@ let s:Watch = {
       \ 'stderr_all' : '',
       \ }
 
-function! alpaca_tags#process#new(command, callbacks) "{{{
-  return s:Watch.new(a:command, a:callbacks)
+function! alpaca_tags#process#new(command, callbacks, tagbuilder) "{{{
+  return s:Watch.new(a:command, a:callbacks, a:tagbuilder)
 endfunction"}}}
 
-function! s:Watch.new(command, callbacks) "{{{
+function! s:Watch.new(command, callbacks, tagbuilder) "{{{
   let instance = copy(self)
-  call instance.constructor(a:command, a:callbacks)
+  call instance.constructor(a:command, a:callbacks, a:tagbuilder)
 
   return instance
 endfunction"}}}
 
-function! s:Watch.constructor(command, callbacks) "{{{
+function! s:Watch.constructor(command, callbacks, tag_builder) "{{{
   let self.pid = join(reltime(), '') " Dummy
   call s:PM.touch(self.pid, a:command)
   let self.command    = a:command
   let self.callbacks  = a:callbacks
+  let self.tag_builder  = a:tag_builder
 endfunction"}}}
 
 function! s:Watch.read() "{{{
@@ -45,6 +46,7 @@ function! s:Watch.read() "{{{
 endfunction"}}}
 
 function! s:Watch.done() "{{{
+  call self.tag_builder.replace_tag2newtag()
   call self.do_callback('done')
 endfunction"}}}
 

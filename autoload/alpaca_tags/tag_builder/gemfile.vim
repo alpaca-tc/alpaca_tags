@@ -5,7 +5,7 @@ let s:Builder = alpaca_tags#tag_builder#new('Gemfile')
 call alpaca_tags#tag_builder#register(s:Builder)
 
 function! s:Builder.available()
-  return filereadable(self.rootpath() . '/Gemfile') && self.super.available()
+  return filereadable(self.rootpath() . '/Gemfile') && self.superclass.available()
 endfunction
 
 function! s:Builder.build()
@@ -15,11 +15,11 @@ function! s:Builder.build()
         \ g:alpaca_tags#ctags_bin,
         \ self.build_option(),
         \ '-R -f',
-        \ self.tagname(),
+        \ self.tempname(),
         \ ]
   let command = join(commands, ' ')
 
-  call alpaca_tags#util#system(command, self.rootpath(), self.messages())
+  call alpaca_tags#util#system(command, self.rootpath(), self.messages(), self)
 endfunction
 
 function! s:Builder.messages()

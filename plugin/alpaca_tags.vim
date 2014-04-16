@@ -70,8 +70,9 @@ command! AlpacaTagsCleanCache call alpaca_tags#cache#clean_cache()
 command! AlpacaTagsDisable let g:alpaca_tags#disable = 1
 command! AlpacaTagsEnable let g:alpaca_tags#disable = 0
 
-if !isdirectory(g:alpaca_tags#cache_dir)
-  call mkdir(g:alpaca_tags#cache_dir, 'p')
+let g:alpaca_tags#temp_path = g:alpaca_tags#cache_dir . '/tmp'
+if !isdirectory(g:alpaca_tags#temp_path)
+  call mkdir(g:alpaca_tags#temp_path, 'p')
 endif
 
 let &cpo = s:save_cpo

@@ -4,7 +4,7 @@ let s:tag_builders = {}
 " s:TagBuilder"{{{
 function! s:TagBuilder.new(path, ...)
   let instance = copy(self)
-  let instance.super = self
+  let instance.superclass = s:TagBuilder
   call remove(instance, 'new')
 
   let instance.path = a:path
@@ -16,6 +16,16 @@ endfunction
 
 function! s:TagBuilder.tagname()
   return expand(alpaca_tags#cache#get_tagname(self.rootpath(), self.name), '%:p')
+endfunction
+
+function! s:TagBuilder.tempname()
+  return expand(alpaca_tags#cache#get_tempname(self.rootpath(), self.name), '%:p')
+endfunction
+
+function! s:TagBuilder.replace_tag2newtag()
+  if filereadable(self.tempname())
+    call rename(self.tempname(), self.tagname())
+  endif
 endfunction
 
 function! s:TagBuilder.available()
@@ -74,7 +84,7 @@ endfunction
 
 function! s:current_path()
   let path = expand('%:p')
-  if empty(path)
+  if empty(path) || !filereadable(path)
     let path = getcwd()
   endif
 
