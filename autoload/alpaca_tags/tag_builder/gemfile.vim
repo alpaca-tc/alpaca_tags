@@ -5,7 +5,7 @@ let s:Builder = alpaca_tags#tag_builder#new('Gemfile')
 call alpaca_tags#tag_builder#register(s:Builder)
 
 function! s:Builder.available()
-  return filereadable(self.rootpath() . '/Gemfile')
+  return filereadable(self.rootpath() . '/Gemfile') && self.super.available()
 endfunction
 
 function! s:Builder.build()
@@ -23,9 +23,9 @@ function! s:Builder.build()
 endfunction
 
 function! s:Builder.messages()
-  let gempath = self.rootpath() . '/Gemfile'
+  let gempath = self.fmt_rootpath() . '/Gemfile'
   return {
-        \ 'done': 'Done! Create tag: ' . gempath,
+        \ 'done': 'Created tag: ' . gempath,
         \ 'in_process': 'Creating tag: ' . gempath . '...',
         \ }
 endfunction

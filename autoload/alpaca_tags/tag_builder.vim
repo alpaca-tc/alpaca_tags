@@ -4,6 +4,7 @@ let s:tag_builders = {}
 " s:TagBuilder"{{{
 function! s:TagBuilder.new(path, ...)
   let instance = copy(self)
+  let instance.super = self
   call remove(instance, 'new')
 
   let instance.path = a:path
@@ -18,7 +19,7 @@ function! s:TagBuilder.tagname()
 endfunction
 
 function! s:TagBuilder.available()
-  return 1
+  return !get(b:, 'alpaca_tags#disable', g:alpaca_tags#disable)
 endfunction
 
 function! s:TagBuilder.rootpath()
@@ -27,6 +28,10 @@ function! s:TagBuilder.rootpath()
   else
     return alpaca_tags#filepath#path2project_root(self.path)
   endif
+endfunction
+
+function! s:TagBuilder.fmt_rootpath()
+  return fnamemodify(self.rootpath(), ':~')
 endfunction
 
 function! s:TagBuilder.build()
@@ -67,8 +72,17 @@ function! s:available_builders(...)
   return builders
 endfunction
 
-function! alpaca_tags#tag_builder#build(name, ...)
+function! s:current_path()
   let path = expand('%:p')
+  if empty(path)
+    let path = getcwd()
+  endif
+
+  return path
+endfunction
+
+function! alpaca_tags#tag_builder#build(name, ...)
+  let path = s:current_path()
   let builder = s:tag_builders[a:name].new(path, a:000)
 
   if builder.available()

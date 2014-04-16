@@ -1,10 +1,4 @@
-function! alpaca_tags#set(path, ...)
-endfunction
-
-function! alpaca_tags#create_tags(path, ...)
-endfunction
-
-function! alpaca_tags#create_tags#complete_source(arglead, cmdline, cursorpos) "{{{
+function! alpaca_tags#complete_source(arglead, cmdline, cursorpos)
   if !exists('s:options_cache')
     let options = copy(g:alpaca_tags#config)
     if has_key(options, '_')
@@ -19,4 +13,4 @@ function! alpaca_tags#create_tags#complete_source(arglead, cmdline, cursorpos) "
   endif
 
   return filter(copy(s:options_cache), 'v:val =~ "^' . arglead . '"')
-endfunction"}}}
+endfunction

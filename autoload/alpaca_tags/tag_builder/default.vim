@@ -20,7 +20,7 @@ endfunction
 
 function! s:Builder.messages()
   return {
-        \ 'done': 'Done! Create tag: ' . self.rootpath(),
-        \ 'in_process': 'Creating tag: ' . self.rootpath() . '...',
+        \ 'done': 'Created tag: ' . self.fmt_rootpath(),
+        \ 'in_process': 'Creating tag: ' . self.fmt_rootpath() . '...',
         \ }
 endfunction

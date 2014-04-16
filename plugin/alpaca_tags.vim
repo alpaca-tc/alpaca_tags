@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-if exists('g:loaded_update_tags') && g:loaded_update_tags
+if exists('g:loaded_update_tags')
   finish
 endif
 let g:loaded_update_tags = 1
@@ -61,12 +61,14 @@ let g:alpaca_tags#cache_dir =
 let g:alpaca_tags#disable = get(g:, 'alpaca_tags#disable', 0)
 let g:alpaca_tags#single_task = get(g:, 'alpaca_tags#single_task', 1)
 
-command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
+command! -nargs=* -complete=customlist,alpaca_tags#complete_source
       \ AlpacaTagsUpdate call alpaca_tags#tag_builder#build('Default', <q-args>)
-command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
+command! -nargs=* -complete=customlist,alpaca_tags#complete_source
       \ AlpacaTagsBundle call alpaca_tags#tag_builder#build('Gemfile', <q-args>)
 command! AlpacaTagsSet call alpaca_tags#tag_builder#set_tags()
 command! AlpacaTagsCleanCache call alpaca_tags#cache#clean_cache()
+command! AlpacaTagsDisable let g:alpaca_tags#disable = 1
+command! AlpacaTagsEnable let g:alpaca_tags#disable = 0
 
 if !isdirectory(g:alpaca_tags#cache_dir)
   call mkdir(g:alpaca_tags#cache_dir, 'p')

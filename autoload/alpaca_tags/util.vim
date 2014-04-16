@@ -95,11 +95,7 @@ function! s:Watch.read() "{{{
 endfunction"}}}
 
 function! s:Watch.done() "{{{
-  echomsg 'Done!!! ' . self.command
-  echomsg join(self.read_all(), ', ')
-
   call remove(s:Watch.instances, self.pid)
-  let g:huga = s:Watch.instances
   call self.do_callback('done')
   call s:PM.kill(self.pid)
 endfunction"}}}
@@ -155,8 +151,6 @@ function! s:check_status() "{{{
       call instance.destroy()
     endif
   endfor
-
-  echomsg len(in_processes)
 endfunction"}}}
 
 function! alpaca_tags#util#check_status() "{{{
