@@ -59,7 +59,7 @@ endif
 let g:alpaca_tags#cache_dir =
       \ get(g:, 'alpaca_tags#cache_dir', expand('~') . '/.alpaca_tags')
 let g:alpaca_tags#disable = get(g:, 'alpaca_tags#disable', 0)
-let g:alpaca_tags#single_task = get(g:, 'alpaca_tags#single_task', 1)
+let g:alpaca_tags#single_task = get(g:, 'alpaca_tags#single_task', !exists('*vimproc#system'))
 
 command! -nargs=* -complete=customlist,alpaca_tags#complete_source
       \ AlpacaTagsUpdate call alpaca_tags#tag_builder#build('Default', <q-args>)
