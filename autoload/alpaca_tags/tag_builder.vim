@@ -1,10 +1,14 @@
 let s:TagBuilder = {}
+let s:TagBuilder.superclass = [s:TagBuilder]
 let s:tag_builders = {}
 
 " s:TagBuilder"{{{
+function! s:TagBuilder.super()
+  return self.superclass[-1]
+endfunction
+
 function! s:TagBuilder.new(path, ...)
   let instance = copy(self)
-  let instance.superclass = s:TagBuilder
   call remove(instance, 'new')
 
   let instance.path = a:path
@@ -114,3 +118,4 @@ endfunction
 
 call alpaca_tags#tag_builder#gemfile#define()
 call alpaca_tags#tag_builder#default#define()
+call alpaca_tags#tag_builder#java_home#define()

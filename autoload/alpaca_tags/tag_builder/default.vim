@@ -1,4 +1,5 @@
 function! alpaca_tags#tag_builder#default#define()
+  return s:Builder
 endfunction
 
 let s:Builder = alpaca_tags#tag_builder#new('Default')

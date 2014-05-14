@@ -1,11 +1,12 @@
 function! alpaca_tags#tag_builder#gemfile#define()
+  return s:Builder
 endfunction
 
 let s:Builder = alpaca_tags#tag_builder#new('Gemfile')
 call alpaca_tags#tag_builder#register(s:Builder)
 
 function! s:Builder.available()
-  return filereadable(self.rootpath() . '/Gemfile') && self.superclass.available()
+  return filereadable(self.rootpath() . '/Gemfile') && self.super().available()
 endfunction
 
 function! s:Builder.build()
