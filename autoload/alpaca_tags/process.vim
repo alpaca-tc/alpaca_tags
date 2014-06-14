@@ -23,6 +23,7 @@ endfunction"}}}
 function! s:Watch.constructor(command, callbacks, tag_builder) "{{{
   let self.pid = join(reltime(), '') " Dummy
   call s:PM.touch(self.pid, a:command)
+  let self.started_at = reltime()
   let self.command    = a:command
   let self.callbacks  = a:callbacks
   let self.tag_builder  = a:tag_builder
@@ -84,4 +85,10 @@ endfunction"}}}
 
 function! s:Watch.status() "{{{
   return s:PM.status(self.pid)
+endfunction"}}}
+
+function! s:Watch.time() "{{{
+  let now = str2float(reltimestr(reltime()))
+  let started_at = str2float(reltimestr(self.started_at))
+  return float2nr(now - started_at)
 endfunction"}}}

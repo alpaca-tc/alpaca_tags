@@ -118,4 +118,3 @@ endfunction
 
 call alpaca_tags#tag_builder#gemfile#define()
 call alpaca_tags#tag_builder#default#define()
-call alpaca_tags#tag_builder#java_home#define()

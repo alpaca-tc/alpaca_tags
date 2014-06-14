@@ -69,6 +69,9 @@ command! AlpacaTagsSet call alpaca_tags#tag_builder#set_tags()
 command! AlpacaTagsCleanCache call alpaca_tags#cache#clean_cache()
 command! AlpacaTagsDisable let g:alpaca_tags#disable = 1
 command! AlpacaTagsEnable let g:alpaca_tags#disable = 0
+command! AlpacaTagsEnable let g:alpaca_tags#disable = 0
+command! AlpacaTagsKillProcess call alpaca_tags#process_manager#reset()
+command! AlpacaTagsProcessStatus call alpaca_tags#process_manager#status()
 
 let g:alpaca_tags#temp_path = g:alpaca_tags#cache_dir . '/tmp'
 if !isdirectory(g:alpaca_tags#temp_path)

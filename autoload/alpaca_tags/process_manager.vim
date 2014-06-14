@@ -27,6 +27,7 @@ function! s:check_status() "{{{
 
   for [path, process] in items(s:process_manager)
     let status = process.status()
+    let g:time = process.time()
 
     if status == 'active'
       call process.in_process()
@@ -52,6 +53,14 @@ function! s:start_watching() "{{{
   augroup END
 endfunction"}}}
 call s:start_watching()
+
+function! alpaca_tags#process_manager#status() "{{{
+  let processes = get(s:, 'process_manager', {})
+
+  for [path, process] in items(processes)
+    echomsg process.pid . ' : ' . process.status() . ' : time(' . process.time() . ')'
+  endfor
+endfunction"}}}
 
 function! alpaca_tags#process_manager#reset() "{{{
   let processes = get(s:, 'process_manager', {})
