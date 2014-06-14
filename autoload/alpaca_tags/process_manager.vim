@@ -27,7 +27,13 @@ function! s:check_status() "{{{
 
   for [path, process] in items(s:process_manager)
     let status = process.status()
-    let g:time = process.time()
+    let timeout_period = get(g:, 'alpaca_tags#timeout_period', 0)
+    if timeout_period
+      if timeout_period < process.time()
+        call alpaca_tags#process_manager#kill(path)
+        continue
+      endif
+    end
 
     if status == 'active'
       call process.in_process()
