@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: update_tags.vim
-" AUTHOR:  Hiroyuki Ishii <alprhcp666@gmail.com>
-" Last Modified: 2013-05-30
+" FILE: alpaca_tags.vim
+" AUTHOR: Ishii Hiroyuki <alpaca-tc@alpaca.tc>
+" Last Modified: 2014-03-15
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-if exists('g:loaded_update_tags') && g:loaded_update_tags
+if exists('g:loaded_update_tags')
   finish
 endif
 let g:loaded_update_tags = 1
@@ -32,23 +32,51 @@ let g:loaded_update_tags = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-call alpaca_tags#variables#init()
+if !exists('g:alpaca_tags#config')
+  let g:alpaca_update_tags#config = {
+        \ '_' : '-R --sort=yes',
+        \ }
+endif
 
-let g:alpaca_tags_root_dir = expand("<sfile>:p:h:h")
-command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
-      \ Tags call alpaca_tags#create_tags#update(<q-args>)
-command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
-      \ TagsUpdate call alpaca_tags#create_tags#update(<q-args>)
-command! -nargs=* -complete=customlist,alpaca_tags#create_tags#complete_source
-      \ TagsBundle call alpaca_tags#create_tags#update_bundle(<q-args>)
-command! -nargs=0 TagsSet call alpaca_tags#set()
-command! -nargs=0 TagsCleanCache call alpaca_tags#clear_cache()
-command! -nargs=0 TagsDisable let g:alpaca_tags_disable = 1
-command! -nargs=0 TagsEnable let g:alpaca_tags_disable = 0
+if !exists('g:alpaca_tags#console')
+  let g:alpaca_tags#console = {
+        \ 'report' : 1,
+        \ }
+endif
 
-command! -nargs=0 Tprevious call alpaca_tags#tags_history#previous()
-command! -nargs=0 Tnext call alpaca_tags#tags_history#next()
-command! -nargs=0 Tcurrent call alpaca_tags#tags_history#current()
+if !exists('g:alpaca_tags#ctags_bin')
+  let s:macvim_ctags = '/Applications/MacVim.app/Contents/MacOS/ctags'
+  if executable(s:macvim_ctags)
+    let g:alpaca_tags#ctags_bin = s:macvim_ctags
+  elseif executable('ctags')
+    let g:alpaca_tags#ctags_bin = 'ctags'
+  else
+    echomsg '[alpaca_tags] Error occurred: Please install ctags'
+    finish
+  endif
+endif
+
+let g:alpaca_tags#cache_dir =
+      \ get(g:, 'alpaca_tags#cache_dir', expand('~') . '/.alpaca_tags')
+let g:alpaca_tags#disable = get(g:, 'alpaca_tags#disable', 0)
+let g:alpaca_tags#single_task = get(g:, 'alpaca_tags#single_task', !exists('*vimproc#system'))
+
+command! -nargs=* -complete=customlist,alpaca_tags#complete_source
+      \ AlpacaTagsUpdate call alpaca_tags#tag_builder#build('Default', <q-args>)
+command! -nargs=* -complete=customlist,alpaca_tags#complete_source
+      \ AlpacaTagsBundle call alpaca_tags#tag_builder#build('Gemfile', <q-args>)
+command! AlpacaTagsSet call alpaca_tags#tag_builder#set_tags()
+command! AlpacaTagsCleanCache call alpaca_tags#cache#clean_cache()
+command! AlpacaTagsDisable let g:alpaca_tags#disable = 1
+command! AlpacaTagsEnable let g:alpaca_tags#disable = 0
+command! AlpacaTagsEnable let g:alpaca_tags#disable = 0
+command! AlpacaTagsKillProcess call alpaca_tags#process_manager#reset()
+command! AlpacaTagsProcessStatus call alpaca_tags#process_manager#status()
+
+let g:alpaca_tags#temp_path = g:alpaca_tags#cache_dir . '/tmp'
+if !isdirectory(g:alpaca_tags#temp_path)
+  call mkdir(g:alpaca_tags#temp_path, 'p')
+endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

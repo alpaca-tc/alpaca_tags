@@ -1,11 +1,5 @@
 # alpaca_update_tags
 
-## Version2.0
-
-AlpacaTagsが再実装されました
-
-[alpaca_tags v2.0](https://github.com/alpaca-tc/alpaca_tags/tree/v2.0)
-
 ## 概要
 
 *ctagsの生成を便利にしよう！*
@@ -15,78 +9,30 @@ AlpacaTagsが再実装されました
 
 ![Demo](http://gifzo.net/tIDwHf2ZAp.gif)
 
-## コマンド
+## Version2 変更点
 
-### TagsSet
+### 1. 変数名の変更
 
-setl tagsの自動化
-`:TagsSet`
+- `g:alpaca_tags_config` -> `g:alpaca_tags#config`
+- `g:alpaca_tags_ctags_bin` -> `g:alpaca_tags#ctags_bin`
+- `g:alpaca_tags_cache_dir` -> `g:alpaca_tags#cache_dir`
+- `g:alpaca_tags_disable` -> `g:alpaca_tags#disable`
 
-### Tags, TagsUpdate(alias)
+### 2. コマンド名の変更
 
-Git配下のディレクトリを対象にctagsを実行する
+:Tagsは他のプラグインとコマンドが被るため、prefixを追加
 
-`:Tags -R --languages=-js`
+- `Tags` -> `AlpacaTags`
+- `TagsBundle` -> `AlpacaTagsBundle`
+- `TagsUpdate` -> `AlpacaTagsUpdate`
+- `TagsSet` -> `AlpacaTagsSet`
+- `TagsCleanCache` -> `AlpacaTagsCleanCache`
 
-*`g:alpaca_update_tags_config`で設定している場合は、オプションを省略可能*
+### 3. 全面的にリファクタリングを行った
 
-`:Tags vim -ruby`
-
-### TagsBundle
-
-Git直下のGemfileを元にtagsを生成する。
-
-`TagsBundle`
-
-## 設定
-
-```.vimrc:vim
-" *g:alpaca_update_tags_config*
-
-" 自身でオプションを作る
-" '_'では、デフォルトする設定を記述する
-let g:alpaca_update_tags_config = {
-      \ '_' : '-R --sort=yes --languages=+Ruby --languages=-css,scss,html',
-      \ 'js' : '--languages=+js',
-      \ 'ruby': '--languages=+Ruby',
-      \ }
-
-" ctagsのパスを設定
-" '/Applications/MacVim.app/Contents/MacOS/ctags'が存在する場合は自動設定
-let g:alpaca_tags_ctags_bin = '/path/to/ctags'
-```
-
-## オススメの設定
-
-```
-" NeoBundle
-NeoBundleLazy 'alpaca-tc/alpaca_tags', {
-      \ 'rev' : 'development',
-      \ 'depends': ['Shougo/vimproc', 'Shougo/unite.vim'],
-      \ 'autoload' : {
-      \   'commands' : ['Tags', 'TagsUpdate', 'TagsSet', 'TagsBundle', 'TagsCleanCache'],
-      \   'unite_sources' : ['tags']
-      \ }}
-
-" ~/.ctagsにctagsの設定ファイルを設置します。現在無い人は、このディレクトリ内の.ctagsをコピーしてください。
-" 適切なlanguageは`ctags --list-maps=all`で見つけてください。人によりますので。
-let g:alpaca_update_tags_config = {
-      \ '_' : '-R --sort=yes --languages=-js,html,css',
-      \ 'ruby': '--languages=+Ruby',
-      \ }
-
-augroup AlpacaTags
-  autocmd!
-  if exists(':Tags')
-    autocmd BufWritePost * TagsUpdate ruby
-    autocmd BufWritePost Gemfile TagsBundle
-    autocmd BufEnter * TagsSet
-  endif
-augroup END
-
-nnoremap <expr>tt  ':Unite tags -horizontal -buffer-name=tags -input='.expand("<cword>").'<CR>'
-```
-
-## TODO
-
-- Gemfile以外のnpm, python ...etcのtags生成機能を追加
+- `.git/working_dir.tags`の代わりに、`g:alpaca_tags#cache_dir`以下にtagsを生成する
+- 今までは実行ファイルを非同期で呼び出していたが、全てVimScriptで行うようにした
+- SVNに依存しなくなった。SVN管理下にないディレクトリは、そのファイルがあるディレクトリを起点に処理を行う。
+- unite-tagsを削除
+- 生成中のtagsを読み込む事がなくなった。生成が完了してから、tagsを新しいものに置き換える。
+- processの監視で、処理の長いプロセスを殺せるようにした。
