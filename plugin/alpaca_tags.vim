@@ -38,9 +38,6 @@ if !exists('g:alpaca_tags#config')
         \ }
 endif
 
-if !exists('g:alpaca_tags#timeout_period')
-endif
-
 if !exists('g:alpaca_tags#console')
   let g:alpaca_tags#console = {
         \ 'report' : 1,

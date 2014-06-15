@@ -2,7 +2,7 @@
 
 FILE: alpaca_tags
 AUTHOR: alpaca-tc <alpaca-tc@alpaca.tc>
-Last Modified: Mar 29 2014
+Last Modified: Jun 14 2014
 " License: MIT license  {{{
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -57,12 +57,16 @@ USAGE                                                *alpaca_tags-usage*
 INSTALL                                                *alpaca_tags-install*
 
 >
-       NeoBundleLazy 'alpaca-tc/alpaca_tags', {
-           \ 'rev' : 'v2.0',
-           \ 'depends': ['Shougo/vimproc'],
-           \ 'autoload' : {
-           \   'commands' : ['AlpacaTagsSet', 'AlpacaTagsBundle', 'AlpacaTagsCleanCache', 'AlpacaTagsUpdate'],
-           \ }}
+        NeoBundleLazy 'alpaca-tc/alpaca_tags', {
+              \ 'depends': ['Shougo/vimproc'],
+              \ 'autoload' : {
+              \   'commands' : [
+              \     { 'name' : 'AlpacaTagsBundle', 'complete': 'customlist,alpaca_tags#complete_source' },
+              \     { 'name' : 'AlpacaTagsUpdate', 'complete': 'customlist,alpaca_tags#complete_source' },
+              \     'AlpacaTagsSet', 'AlpacaTagsCleanCache', 'AlpacaTagsEnable', 'AlpacaTagsDisable', 'AlpacaTagsKillProcess', 'AlpacaTagsProcessStatus',
+              \ ],
+              \ }}
+
 
 ==============================================================================
 INTERFACE                                        *alpaca_tags-interface*
@@ -73,13 +77,10 @@ alpaca_tags generates tags to g:alpaca_tags#cache_dir.
 COMMANDS                                         *alpaca_tags-commands*
 
 :AlpacaTagsUpdate [{options}]                        *:AlpacaTagsUpdate*
-                alpaca_tags can generate tags in the root working directory.
+                alpaca_tags generates tags in the working directory.
                 If you set |g:alpaca_tags#config|, you can use key as alias.
 
                 For example:
-
-                :AlpacaTagsUpdate -R
-                Execute `ctags -R` in the root current working directory.
 
 >
                 let g:alpaca_tags#config = {
@@ -99,15 +100,29 @@ COMMANDS                                         *alpaca_tags-commands*
                        \ 'bundle': '--languages=+Ruby',
                        \ }
 
+                :AlpacaTagsUpdate -R
+                Execute `ctags -R` in the current working directory.
+
                 :AlpacaTags ruby
-                Execute `ctags -R --languages=Ruby` in the root current working
-                directory.
+                Execute `ctags --languages=Ruby -R --sort=yes --languages=+Ruby --languages=-js,JavaScript` in the root current working directory.
 
 :AlpacaTagsBundle [{options}]                            *:AlpacaTagsBundle*
-                alpaca_tags can generate tags from Gemfile in the root working directory.
+                alpaca_tags generates tags of each gem from Gemfile in the root working directory.
 
 :AlpacaTagsSet                                           *:AlpacaTagsSet*
-                Vim can set tags if its are exist in the .git
+                Vim loads generated tags.
+
+:AlpacaTagsCleanCache                                        *:AlpacaTagsCleanCache*
+                Removes generated tags and caches.
+
+:AlpacaTagsDisable                                        *:AlpacaTagsDisable*
+                Disables alpaca_tags
+
+:AlpacaTagsEnable                                        *:AlpacaTagsEnable*
+                Enables alpaca_tags
+
+:AlpacaTagsKillProcess                                   *:AlpacaTagsKillProcess*
+                Kills runnning processes.
 
 ------------------------------------------------------------------------------
 VARIABLES                                         *alpaca_tags-variables*
@@ -117,10 +132,11 @@ g:alpaca_tags#cache_dir                           *g:alpaca_tags#cache_dir*
                 The default value is expand('~/.alpaca_tags')
 
 g:alpaca_tags#disable                                *g:alpaca_tags#disable*
-                Disable generating tags.
+                If it is 1, alpaca_tags is not running.
 
 g:alpaca_tags#ctags_bin                                *g:alpaca_tags#ctags_bin*
-                Set ctags command.
+                Set ctags command path.
+
                 The default value is
                 '/Applications/MacVim.app/Contents/MACOS/ctags' or 'ctags'.
 
@@ -147,12 +163,21 @@ g:alpaca_tags#config                                *g:alpaca_tags#config*
                         \ }
 <
 
+g:alpaca_tags#single_task                                *g:alpaca_tags#single_task*
+                If it is 1, the maximum of process is only 1.
+
+g:alpaca_tags#timeout_period                                *g:alpaca_tags#timeout_period*
+                If it is 60, alpaca_tags will kill process in 60 seconds.
+
 g:alpaca_tags#console                                 *g:alpaca_tags#console*
-                This variable is options for debug.
+                NOTE This variable is options for debugger.
 >
+                If it is as following, debug is shown.
+
                          let g:alpaca_tags#console = {
                                \ 'report' : 1,
                                \ }
+
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:

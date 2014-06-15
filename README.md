@@ -28,11 +28,11 @@
 - `TagsSet` -> `AlpacaTagsSet`
 - `TagsCleanCache` -> `AlpacaTagsCleanCache`
 
-### 3. Git以外に対応
+### 3. 全面的にリファクタリングを行った
 
-実装を0から書き直しました
-
-- `.git/working_dir.tags`を汚染する -> `g:alpaca_tags#cache_dir`以下に保存するようにした
+- `.git/working_dir.tags`の代わりに、`g:alpaca_tags#cache_dir`以下にtagsを生成する
 - 今までは実行ファイルを非同期で呼び出していたが、全てVimScriptで行うようにした
-- Gitに依存しなくなった。プロジェクト管理されていない場合は、そのファイルがあるディレクトリを起点に処理を行う
-- Unite-tagsを削除。恐らく別のプラグインに切り出すか、Unite-tagを改良する方向で調整しています。
+- SVNに依存しなくなった。SVN管理下にないディレクトリは、そのファイルがあるディレクトリを起点に処理を行う。
+- unite-tagsを削除
+- 生成中のtagsを読み込む事がなくなった。生成が完了してから、tagsを新しいものに置き換える。
+- processの監視で、処理の長いプロセスを殺せるようにした。
