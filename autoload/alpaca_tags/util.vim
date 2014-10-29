@@ -32,7 +32,6 @@ function! alpaca_tags#util#system(command, path, callbacks, tagbuilder) "{{{
   let current_dir = getcwd()
 
   if empty(a:path) || s:skip_if_single_task_enable()
-    echomsg 'Skip task.'
     return
   endif
 
