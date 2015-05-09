@@ -52,6 +52,9 @@ function! s:start_watching() "{{{
 
   augroup AlpacaTagsWatching
     autocmd!
+    if get(g:, 'alpaca_tags#enable_status_check_on_cursormoved', 0)
+      autocmd CursorMoved,CursorMovedI * call s:check_status()
+    endif
     autocmd CursorHold,CursorHoldI * call s:check_status()
     autocmd VimLeavePre * call alpaca_tags#process_manager#reset()
   augroup END
