@@ -33,6 +33,11 @@ function! s:check_status() "{{{
       continue
     end
 
+    if s:is_over_max_filesize(process.tag_builder.tempname())
+      call alpaca_tags#process_manager#kill(path)
+      continue
+    endif
+
     if status == 'active'
       call process.in_process()
     elseif status == 'inactive'
@@ -43,6 +48,12 @@ function! s:check_status() "{{{
     endif
   endfor
 endfunction"}}}
+
+function! s:is_over_max_filesize(path)
+  let max_filesize = get(g:, 'alpaca_tags#max_filesize', 0)
+  let actual_filesize = getfsize(a:path)
+  return max_filesize && max_filesize < actual_filesize
+endfunction
 
 function! s:start_watching() "{{{
   if exists('s:loaded_start_watching')
