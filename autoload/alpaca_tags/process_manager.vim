@@ -27,13 +27,8 @@ function! s:check_status() "{{{
 
   for [path, process] in items(s:process_manager)
     let status = process.status()
-    let timeout_period = get(g:, 'alpaca_tags#timeout_period', 0)
-    if timeout_period && timeout_period < process.time()
-      call alpaca_tags#process_manager#kill(path)
-      continue
-    end
 
-    if s:is_over_max_filesize(process.tag_builder.tempname())
+    if s:is_problematic_process(process)
       call alpaca_tags#process_manager#kill(path)
       continue
     endif
@@ -49,11 +44,29 @@ function! s:check_status() "{{{
   endfor
 endfunction"}}}
 
-function! s:is_over_max_filesize(path)
+" Check process health condition {{{
+function! s:is_problematic_process(process)
+  " TODO: Separate checker.
+
+  " Check job elapsed time
+  let timeout_period = get(g:, 'alpaca_tags#timeout_period', 0)
+  if timeout_period && timeout_period < a:process.time()
+    return 1
+  end
+
+  " Check filesize
   let max_filesize = get(g:, 'alpaca_tags#max_filesize', 0)
-  let actual_filesize = getfsize(a:path)
-  return max_filesize && max_filesize < actual_filesize
-endfunction
+  if max_filesize
+    let actual_filesize = getfsize(a:process.tag_builder.tempname())
+    echo actual_filesize
+
+    if max_filesize < actual_filesize
+      return 1
+    endif
+  endif
+
+  return 0
+endfunction"}}}
 
 function! s:start_watching() "{{{
   if exists('s:loaded_start_watching')
