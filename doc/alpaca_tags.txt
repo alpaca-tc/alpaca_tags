@@ -169,6 +169,12 @@ g:alpaca_tags#single_task                                *g:alpaca_tags#single_t
 g:alpaca_tags#timeout_period                                *g:alpaca_tags#timeout_period*
                 If it is 60, alpaca_tags will kill process in 60 seconds.
 
+g:alpaca_tags#max_filesize                                *g:alpaca_tags#max_filesize*
+                If it is 1073741824(1GB), alpaca_tags will kill process with a large file over the max size.
+
+g:alpaca_tags#enable_status_check_on_cursormoved                                *g:alpaca_tags#enable_status_check_on_cursormoved*
+                If it is 1, alpaca_tags will check the status of processes on moving a cursor.
+
 g:alpaca_tags#console                                 *g:alpaca_tags#console*
                 NOTE This variable is options for debugger.
 >
