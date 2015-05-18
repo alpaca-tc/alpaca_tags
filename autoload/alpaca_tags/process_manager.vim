@@ -58,7 +58,6 @@ function! s:is_problematic_process(process)
   let max_filesize = get(g:, 'alpaca_tags#max_filesize', 0)
   if max_filesize
     let actual_filesize = getfsize(a:process.tag_builder.tempname())
-    echo actual_filesize
 
     if max_filesize < actual_filesize
       return 1
