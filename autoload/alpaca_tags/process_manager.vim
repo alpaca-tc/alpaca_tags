@@ -90,6 +90,7 @@ function! alpaca_tags#process_manager#status() "{{{
   for [path, process] in items(processes)
     echomsg process.pid . ' : ' . process.status() . ' : time(' . process.time() . ')'
   endfor
+  return processes
 endfunction"}}}
 
 function! alpaca_tags#process_manager#reset() "{{{
