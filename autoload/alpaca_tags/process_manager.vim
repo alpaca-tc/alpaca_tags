@@ -84,13 +84,16 @@ function! s:start_watching() "{{{
 endfunction"}}}
 call s:start_watching()
 
+function! alpaca_tags#process_manager#all() "{{{
+  return get(s:, 'process_manager', {})
+endfunction"}}}
+
 function! alpaca_tags#process_manager#status() "{{{
   let processes = get(s:, 'process_manager', {})
 
   for [path, process] in items(processes)
     echomsg process.pid . ' : ' . process.status() . ' : time(' . process.time() . ')'
   endfor
-  return processes
 endfunction"}}}
 
 function! alpaca_tags#process_manager#reset() "{{{
